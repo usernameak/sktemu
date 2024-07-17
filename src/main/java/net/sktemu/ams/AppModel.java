@@ -27,6 +27,7 @@ public class AppModel implements AutoCloseable {
     private final File cacheDir;
     private String appID;
     private String midletClassName;
+    private String midletTitle;
     private AmsClassLoader classLoader;
     private Display display;
     private final EmuCanvas emuCanvas;
@@ -79,7 +80,12 @@ public class AppModel implements AutoCloseable {
         if (midlet1Split.length != 3) {
             throw new IllegalArgumentException("MIDlet-1 must be exactly 3 comma separated items long");
         }
+        midletTitle = midlet1Split[0];
         midletClassName = midlet1Split[2];
+    }
+
+    public String getMidletTitle() {
+        return midletTitle;
     }
 
     public String getAppProperty(String name) {

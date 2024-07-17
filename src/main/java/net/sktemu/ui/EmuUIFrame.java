@@ -51,5 +51,6 @@ public class EmuUIFrame extends JFrame {
 
     public void setAppModel(AppModel appModel) {
         this.appModel = appModel;
+        setTitle("SKTemu \u2013 " + appModel.getMidletTitle());
     }
 }
