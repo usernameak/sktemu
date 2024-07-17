@@ -27,32 +27,20 @@ public class EmuUIFrame extends JFrame {
             public void keyPressed(KeyEvent e) {
                 Canvas canvas = (Canvas) appModel.getDisplay().getCurrent();
 
-                switch (e.getKeyCode()) {
-                    case KeyEvent.VK_LEFT:
-                        Canvas.emitKeyPressed(canvas, Canvas.KEY_LEFT);
-                        break;
-                    case KeyEvent.VK_UP:
-                        Canvas.emitKeyPressed(canvas, Canvas.KEY_UP);
-                        break;
-                    case KeyEvent.VK_RIGHT:
-                        Canvas.emitKeyPressed(canvas, Canvas.KEY_RIGHT);
-                        break;
-                    case KeyEvent.VK_DOWN:
-                        Canvas.emitKeyPressed(canvas, Canvas.KEY_DOWN);
-                        break;
-                    case KeyEvent.VK_ENTER:
-                        Canvas.emitKeyPressed(canvas, Canvas.KEY_FIRE);
-                        break;
-                    case KeyEvent.VK_MINUS:
-                        Canvas.emitKeyPressed(canvas, Canvas.KEY_POUND);
-                        break;
+                Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
+                if (keyCode != null) {
+                    Canvas.emitKeyPressed(canvas, keyCode);
                 }
-
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
+                Canvas canvas = (Canvas) appModel.getDisplay().getCurrent();
 
+                Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
+                if (keyCode != null) {
+                    Canvas.emitKeyReleased(canvas, keyCode);
+                }
             }
         });
     }
