@@ -1,5 +1,6 @@
 package net.sktemu.ams;
 
+import net.sktemu.rms.RmsManager;
 import net.sktemu.ui.EmuCanvas;
 import net.sktemu.utils.SharedConstants;
 import net.sktemu.xceapi.XceApiManager;
@@ -7,6 +8,7 @@ import net.sktemu.xceapi.XceApiManager;
 import javax.microedition.lcdui.Display;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
+import javax.microedition.rms.RecordStoreException;
 import javax.swing.*;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -15,23 +17,25 @@ import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
-public class AppModel {
+public class AppModel implements AutoCloseable {
     public static AppModel appModelInstance = null;
 
     private final Properties propertyTable = new Properties();
     private final File dataDir;
+    private final File cacheDir;
     private String appID;
     private String midletClassName;
     private AmsClassLoader classLoader;
     private Display display;
     private final EmuCanvas emuCanvas;
+    private RmsManager rmsManager;
 
     private ExecutorService appThreadExecutor;
 
     static {
-        System.setProperty("com.xce.wipi.version", "1.0.0");
-        System.setProperty("m.SK_VM", "12");
+        AmsSysPropManager.init();
     }
 
     public AppModel(File dataDir, EmuCanvas emuCanvas) throws IOException {
@@ -51,6 +55,13 @@ public class AppModel {
             loadDescriptor(file);
             break;
         }
+
+        cacheDir = new File(dataDir, "_SKTemu");
+        if (!cacheDir.exists() && !cacheDir.mkdir()) {
+            throw new IOException("Failed to create cache directory");
+        }
+
+        rmsManager = new RmsManager();
     }
 
     public EmuCanvas getEmuCanvas() {
@@ -86,17 +97,12 @@ public class AppModel {
     private File doCacheJar() throws AmsException {
         File jarPath = new File(dataDir, appID + ".jar");
 
-        File cachedJarDir = new File(dataDir, "_SKTemu_cache");
-        if (!cachedJarDir.exists() && !cachedJarDir.mkdir()) {
-            throw new AmsException("Failed to create cached jar directory");
-        }
-
         try (FileInputStream fis = new FileInputStream(jarPath)) {
             if (fis.skip(32) != 32) {
                 throw new AmsException("Failed to skip data in prefixed jar input stream");
             }
 
-            File cachedJarPath = new File(cachedJarDir, "app.jar");
+            File cachedJarPath = new File(cacheDir, "app.jar");
             try {
                 Files.copy(fis, cachedJarPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 return cachedJarPath;
@@ -108,12 +114,22 @@ public class AppModel {
         }
     }
 
+    public RmsManager getRmsManager() {
+        return rmsManager;
+    }
+
     public void initAppModel() throws AmsException {
         appModelInstance = this;
 
         appThreadExecutor = Executors.newSingleThreadExecutor();
 
         display = new Display();
+
+        try {
+            rmsManager.initialize(cacheDir);
+        } catch (RecordStoreException e) {
+            throw new AmsException(e);
+        }
 
         try {
             classLoader = new AmsClassLoader(doCacheJar());
@@ -164,5 +180,39 @@ public class AppModel {
 
     public File getDataDir() {
         return dataDir;
+    }
+
+    @Override
+    public void close() throws AmsException {
+        try {
+            if (appThreadExecutor != null) {
+                appThreadExecutor.shutdown();
+                try {
+                    appThreadExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                } catch (InterruptedException e) {
+                    throw new AmsException("termination interrupted", e);
+                }
+            }
+            AmsException exception = null;
+            if (rmsManager != null) {
+                try {
+                    rmsManager.close();
+                } catch (RecordStoreException e) {
+                    exception = new AmsException("failed to close rms manager", e);
+                }
+            }
+            if (classLoader != null) {
+                try {
+                    classLoader.close();
+                } catch (IOException e) {
+                    exception = new AmsException("failed to close classloader", e);
+                }
+            }
+            if (exception != null) {
+                throw exception;
+            }
+        } finally {
+            appModelInstance = null;
+        }
     }
 }

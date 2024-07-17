@@ -194,6 +194,10 @@ public class Graphics {
         return g.graphics2D;
     }
 
+    public static BufferedImage getImage(Graphics g) {
+        return g.bufferedImage;
+    }
+
     // XCE API
     public void reset() {
         System.err.println("Graphics::reset() not impl");

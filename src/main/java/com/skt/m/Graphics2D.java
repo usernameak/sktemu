@@ -1,5 +1,7 @@
 package com.skt.m;
 
+import com.xce.lcdui.Toolkit;
+import com.xce.lcdui.XDisplay;
 import net.sktemu.debug.FeatureNotImplementedError;
 
 import javax.microedition.lcdui.Graphics;
@@ -24,5 +26,16 @@ public class Graphics2D {
                 tx, ty, tx + sw, ty + sh,
                 sx, sy, sx + sw, sy + sh,
                 null);
+    }
+
+    public static Image captureLCD(int x, int y, int w, int h) {
+        Image image = Image.createImage(w, h);
+        BufferedImage bufferedImage = Graphics.getImage(Toolkit.graphics);
+        Graphics.getAWTGraphics(image.getGraphics()).drawImage(
+                bufferedImage,
+                0, 0, w, h,
+                x, y, x + w, x + h,
+                null);
+        return image;
     }
 }
