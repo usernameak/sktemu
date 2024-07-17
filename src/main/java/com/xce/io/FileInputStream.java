@@ -7,7 +7,6 @@ public class FileInputStream extends InputStream {
     private final java.io.FileInputStream stream;
 
     public FileInputStream(String name) throws IOException {
-        System.out.println(name);
         this.stream = new java.io.FileInputStream(XFile.convertFilePath(name));
     }
 
