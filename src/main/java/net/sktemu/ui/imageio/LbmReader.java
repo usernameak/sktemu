@@ -166,7 +166,7 @@ public class LbmReader extends ImageReader {
                 }
             }
 
-            raster.setDataElements(0, 0, resultPixelData);
+            raster.setDataElements(0, 0, destRegion.width, destRegion.height, resultPixelData);
         } else {
             if (width * height != header.bytesPerPlane) {
                 throw new IIOException("Wrong number of bytes per plane");
