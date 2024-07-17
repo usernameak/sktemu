@@ -8,7 +8,7 @@ public class XDisplay {
 
     public static void refresh(int x, int y, int width, int height) {
         AppModel.appModelInstance.runOnUiThread(() -> {
-            AppModel.appModelInstance.getEmuCanvas().repaint(x, y, width, height);
+            AppModel.appModelInstance.getEmuCanvas().repaint();
         });
     }
 }

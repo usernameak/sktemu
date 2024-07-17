@@ -10,7 +10,7 @@ public class EmuCanvas extends JComponent {
 
     public EmuCanvas(int width, int height) {
         this.bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        setPreferredSize(new Dimension(width, height));
+        setPreferredSize(new Dimension(width * 2, height * 2));
 
         this.midpGraphics = new javax.microedition.lcdui.Graphics(bufferedImage);
     }
@@ -19,7 +19,11 @@ public class EmuCanvas extends JComponent {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        g.drawImage(bufferedImage, 0, 0, this);
+        Dimension size = getSize();
+        g.drawImage(bufferedImage,
+                0, 0, size.width, size.height,
+                0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(),
+                this);
     }
 
     public BufferedImage getBufferedImage() {
