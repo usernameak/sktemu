@@ -82,6 +82,14 @@ public class AppModel implements AutoCloseable {
         }
         midletTitle = midlet1Split[0];
         midletClassName = midlet1Split[2];
+
+        midletTitle = propertyTable.getProperty("MIDlet-Name");
+        if (midletTitle == null) {
+            midletTitle = midlet1Split[0];
+            if (midletTitle.isEmpty()) {
+                midletTitle = midletClassName;
+            }
+        }
     }
 
     public String getMidletTitle() {
@@ -108,13 +116,15 @@ public class AppModel implements AutoCloseable {
                 throw new AmsException("Failed to skip data in prefixed jar input stream");
             }
 
-            File cachedJarPath = new File(cacheDir, "app.jar");
+            File cachedJarPath = new File(cacheDir, "app_remapped.jar");
+            /*
             try {
                 Files.copy(fis, cachedJarPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                return cachedJarPath;
             } catch (IOException e) {
                 throw new AmsException("Failed to create cached jar file", e);
             }
+             */
+            return cachedJarPath;
         } catch (IOException e) {
             throw new AmsException("Failed to open the prefixed jar", e);
         }

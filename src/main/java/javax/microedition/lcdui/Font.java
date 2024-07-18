@@ -1,5 +1,6 @@
 package javax.microedition.lcdui;
 
+import com.xce.lcdui.Toolkit;
 import net.sktemu.debug.FeatureNotImplementedError;
 
 public class Font {
@@ -20,6 +21,12 @@ public class Font {
     public static final int FONT_INPUT_TEXT = 1;
 
     private static final Font DEFAULT = new Font();
+
+    private final java.awt.Font font = new java.awt.Font("Gulim", java.awt.Font.PLAIN, 12);
+
+    public java.awt.Font getAWTFont() {
+        return font;
+    }
 
     public static Font getDefaultFont() {
         return DEFAULT;
@@ -58,7 +65,9 @@ public class Font {
     }
 
     public int getHeight() {
-        throw new FeatureNotImplementedError("Font::getHeight");
+        // TODO: this will not work with multiple fonts
+
+        return Graphics.getAWTGraphics(Toolkit.graphics).getFontMetrics().getHeight();
     }
 
     public int getBaselinePosition() {
@@ -70,7 +79,7 @@ public class Font {
     }
 
     public int charsWidth(char[] ch, int offset, int length) {
-        throw new FeatureNotImplementedError("Font::charsWidth");
+        return Graphics.getAWTGraphics(Toolkit.graphics).getFontMetrics().charsWidth(ch, offset, length);
     }
 
     public int stringWidth(String str) {

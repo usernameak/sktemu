@@ -7,7 +7,7 @@ public class AmsSysPropManager {
         System.setProperty("m.VENDER", "HD");
         System.setProperty("m.MODEL", "11");
         System.setProperty("m.CARRIER", "SKT");
-        System.setProperty("m.MIN", "00000000");
-        System.setProperty("MIN", "00000000");
+        System.setProperty("m.MIN", "0000000000");
+        System.setProperty("MIN", "0000000000");
     }
 }

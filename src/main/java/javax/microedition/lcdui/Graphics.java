@@ -26,8 +26,7 @@ public class Graphics {
         this.graphics2D = bufferedImage.createGraphics();
         this.clipRect = new Rectangle(0, 0, bufferedImage.getWidth(), bufferedImage.getHeight());
 
-        java.awt.Font font = new java.awt.Font("Gulim", java.awt.Font.PLAIN, 12);
-        graphics2D.setFont(font);
+        graphics2D.setFont(Font.getDefaultFont().getAWTFont());
     }
 
     public void translate(int x, int y) {
@@ -65,8 +64,7 @@ public class Graphics {
     }
 
     public void setColor(int red, int green, int blue) {
-        throw new FeatureNotImplementedError("Graphics::setColor");
-
+        setColor((red << 16) | (green << 8) | blue);
     }
 
     public void setColor(int rgb) {
@@ -78,7 +76,7 @@ public class Graphics {
     }
 
     public Font getFont() {
-        throw new FeatureNotImplementedError("Graphics::getFont");
+        return Font.getDefaultFont();
     }
 
     public void setStrokeStyle(int style) {
@@ -90,7 +88,6 @@ public class Graphics {
     }
 
     public void setFont(Font font) {
-        throw new FeatureNotImplementedError("Graphics::setFont");
     }
 
     public int getClipX() {

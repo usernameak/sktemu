@@ -85,7 +85,17 @@ public abstract class Canvas extends Displayable {
     }
 
     public int getGameAction(int keyCode) {
-        throw new FeatureNotImplementedError("Canvas::getGameAction");
+        switch (keyCode) {
+            case KEY_UP: return UP;
+            case KEY_DOWN: return DOWN;
+            case KEY_LEFT: return LEFT;
+            case KEY_RIGHT: return RIGHT;
+
+            case KEY_FIRE: return FIRE;
+            case KEY_COML: return GAME_A;
+            case KEY_COMR: return GAME_B;
+        }
+        return 0;
     }
 
     protected void keyPressed(int keyCode) {
