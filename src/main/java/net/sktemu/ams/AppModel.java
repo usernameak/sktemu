@@ -116,14 +116,12 @@ public class AppModel implements AutoCloseable {
                 throw new AmsException("Failed to skip data in prefixed jar input stream");
             }
 
-            File cachedJarPath = new File(cacheDir, "app_remapped.jar");
-            /*
+            File cachedJarPath = new File(cacheDir, "app.jar");
             try {
                 Files.copy(fis, cachedJarPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new AmsException("Failed to create cached jar file", e);
             }
-             */
             return cachedJarPath;
         } catch (IOException e) {
             throw new AmsException("Failed to open the prefixed jar", e);
