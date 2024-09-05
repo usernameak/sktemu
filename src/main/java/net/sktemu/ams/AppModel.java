@@ -111,14 +111,25 @@ public class AppModel implements AutoCloseable {
     private File doCacheJar() throws AmsException {
         File jarPath = new File(dataDir, appID + ".jar");
 
-        try (FileInputStream fis = new FileInputStream(jarPath)) {
-            if (fis.skip(32) != 32) {
-                throw new AmsException("Failed to skip data in prefixed jar input stream");
+        try (FileInputStream fis = new FileInputStream(jarPath);
+             BufferedInputStream bis = new BufferedInputStream(fis)) {
+
+            bis.mark(2);
+            byte[] signature = new byte[2];
+            if (bis.read(signature) != 2) {
+                throw new AmsException("Not enough data in jar input stream");
+            }
+            bis.reset();
+
+            if (signature[0] != 'P' || signature[1] != 'K') {
+                if (bis.skip(32) != 32) {
+                    throw new AmsException("Failed to skip data in prefixed jar input stream");
+                }
             }
 
             File cachedJarPath = new File(cacheDir, "app.jar");
             try {
-                Files.copy(fis, cachedJarPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(bis, cachedJarPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new AmsException("Failed to create cached jar file", e);
             }

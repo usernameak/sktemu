@@ -1,11 +1,13 @@
 package net.sktemu.ams;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
+
+import java.util.HashSet;
 
 public class AmsClassProcessor extends ClassVisitor {
     private static class MethodProcessor extends MethodVisitor {
+        private HashSet<Label> catchLabels = new HashSet<>();
+
         public MethodProcessor(MethodVisitor parent) {
             super(Opcodes.ASM9, parent);
         }
@@ -29,6 +31,29 @@ public class AmsClassProcessor extends ClassVisitor {
             }
 
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+        }
+
+        @Override
+        public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+            super.visitTryCatchBlock(start, end, handler, type);
+
+            catchLabels.add(handler);
+        }
+
+        @Override
+        public void visitLabel(Label label) {
+            super.visitLabel(label);
+
+            if (catchLabels.contains(label)) {
+                super.visitInsn(Opcodes.DUP);
+                super.visitMethodInsn(
+                        Opcodes.INVOKEVIRTUAL,
+                        "java/lang/Throwable",
+                        "printStackTrace",
+                        "()V",
+                        false
+                );
+            }
         }
     }
 

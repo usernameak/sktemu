@@ -38,4 +38,8 @@ public class Graphics2D {
                 null);
         return image;
     }
+
+    public static Image createMaskableImage(int width, int height) {
+        return Image.createImage(width, height);
+    }
 }

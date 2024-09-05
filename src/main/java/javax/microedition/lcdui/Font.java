@@ -75,7 +75,7 @@ public class Font {
     }
 
     public int charWidth(char ch) {
-        throw new FeatureNotImplementedError("Font::charWidth");
+        return Graphics.getAWTGraphics(Toolkit.graphics).getFontMetrics().charWidth(ch);
     }
 
     public int charsWidth(char[] ch, int offset, int length) {
