@@ -41,4 +41,5 @@ build/
 /apps
 /specs
 /src/main/java/net/sktemu/xxx/*
+/dependency-reduced-pom.xml
 
