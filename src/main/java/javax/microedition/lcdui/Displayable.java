@@ -3,9 +3,7 @@ package javax.microedition.lcdui;
 import net.sktemu.debug.FeatureNotImplementedError;
 
 public abstract class Displayable {
-    public boolean isShown() {
-        throw new FeatureNotImplementedError("Displayable::isShown");
-    }
+    public abstract boolean isShown();
 
     public void addCommand(Command cmd) {
         throw new FeatureNotImplementedError("Displayable::addCommand");

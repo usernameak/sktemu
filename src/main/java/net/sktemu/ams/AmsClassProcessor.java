@@ -5,10 +5,13 @@ import org.objectweb.asm.*;
 import java.util.HashSet;
 
 public class AmsClassProcessor extends ClassVisitor {
-    private static class MethodProcessor extends MethodVisitor {
-        private HashSet<Label> catchLabels = new HashSet<>();
+    private static final boolean exceptionDebugEnabled =
+            "true".equals(System.getProperty("sktemu.exceptionDebugEnable"));
 
-        public MethodProcessor(MethodVisitor parent) {
+    private static class ResourceMethodProcessor extends MethodVisitor {
+        private final HashSet<Label> catchLabels = new HashSet<>();
+
+        public ResourceMethodProcessor(MethodVisitor parent) {
             super(Opcodes.ASM9, parent);
         }
 
@@ -31,6 +34,14 @@ public class AmsClassProcessor extends ClassVisitor {
             }
 
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+        }
+    }
+
+    private static class ExceptionDebugProcessor extends MethodVisitor {
+        private final HashSet<Label> catchLabels = new HashSet<>();
+
+        public ExceptionDebugProcessor(MethodVisitor parent) {
+            super(Opcodes.ASM9, parent);
         }
 
         @Override
@@ -63,6 +74,11 @@ public class AmsClassProcessor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        return new MethodProcessor(super.visitMethod(access, name, descriptor, signature, exceptions));
+        MethodVisitor visitor = super.visitMethod(access, name, descriptor, signature, exceptions);
+        visitor = new ResourceMethodProcessor(visitor);
+        if (exceptionDebugEnabled) {
+            visitor = new ExceptionDebugProcessor(visitor);
+        }
+        return visitor;
     }
 }

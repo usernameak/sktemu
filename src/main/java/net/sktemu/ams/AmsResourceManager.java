@@ -11,7 +11,7 @@ public class AmsResourceManager {
 
         System.out.println("AmsResourceManager::getResourceAsStream " + name);
         try {
-            return AppModel.appModelInstance.getClassLoader().getAmsResourceAsStream(name);
+            return AppInstance.appInstance.getClassLoader().getAmsResourceAsStream(name);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

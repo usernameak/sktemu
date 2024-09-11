@@ -1,7 +1,7 @@
 package com.xce.lcdui;
 
 import com.skt.m.Graphics2D;
-import net.sktemu.ams.AppModel;
+import net.sktemu.ams.AppInstance;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
@@ -11,8 +11,8 @@ public class XDisplay {
     public static int height2;
 
     public static void refresh(int x, int y, int width, int height) {
-        AppModel.appModelInstance.runOnUiThread(() -> {
-            AppModel.appModelInstance.getEmuCanvas().repaint();
+        AppInstance.appInstance.runOnUiThread(() -> {
+            AppInstance.appInstance.getEmuCanvas().repaint();
         });
     }
 

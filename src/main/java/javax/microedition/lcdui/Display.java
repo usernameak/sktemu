@@ -1,18 +1,18 @@
 package javax.microedition.lcdui;
 
-import net.sktemu.ams.AppModel;
+import net.sktemu.ams.AppInstance;
 import net.sktemu.ui.EmuCanvas;
 
 import javax.microedition.midlet.MIDlet;
 
 public class Display {
-    private final EmuCanvas emuCanvas = AppModel.appModelInstance.getEmuCanvas();
+    private final EmuCanvas emuCanvas = AppInstance.appInstance.getEmuCanvas();
 
     private Displayable current;
 
     public static Display getDisplay(MIDlet midlet) {
-        AppModel appModel = MIDlet.getAppModel(midlet);
-        return appModel.getDisplay();
+        AppInstance appInstance = MIDlet.getAppModel(midlet);
+        return appInstance.getDisplay();
     }
 
     public Displayable getCurrent() {
@@ -20,6 +20,15 @@ public class Display {
     }
 
     public void setCurrent(Displayable current) {
+        if (this.current != current) {
+            if (this.current instanceof Canvas) {
+                Canvas.setCanvasShown((Canvas) this.current, false);
+            }
+            if (current instanceof Canvas) {
+                Canvas.setCanvasShown((Canvas) current, true);
+            }
+        }
+
         this.current = current;
 
         _ui_doRepaint();

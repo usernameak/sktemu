@@ -1,5 +1,7 @@
 package net.sktemu.ui;
 
+import net.sktemu.ams.AppDeviceProfile;
+import net.sktemu.ams.AppInstance;
 import net.sktemu.ams.AppModel;
 
 import javax.microedition.lcdui.Canvas;
@@ -10,12 +12,15 @@ import java.awt.event.KeyEvent;
 public class EmuUIFrame extends JFrame {
     private final EmuCanvas canvas;
 
-    private AppModel appModel;
+    private AppInstance appInstance;
 
-    public EmuUIFrame() {
-        setTitle("SKTemu");
+    public EmuUIFrame(AppModel appModel) {
+        setTitle("SKTemu \u2013 " + appModel.getMidletTitle());
 
-        canvas = new EmuCanvas(240, 320);
+        canvas = new EmuCanvas(
+                appModel.getDeviceProfile().getScreenWidth(),
+                appModel.getDeviceProfile().getScreenHeight()
+        );
         setContentPane(canvas);
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -25,7 +30,7 @@ public class EmuUIFrame extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                Canvas canvas = (Canvas) appModel.getDisplay().getCurrent();
+                Canvas canvas = (Canvas) appInstance.getDisplay().getCurrent();
 
                 Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
                 if (keyCode != null) {
@@ -35,7 +40,7 @@ public class EmuUIFrame extends JFrame {
 
             @Override
             public void keyReleased(KeyEvent e) {
-                Canvas canvas = (Canvas) appModel.getDisplay().getCurrent();
+                Canvas canvas = (Canvas) appInstance.getDisplay().getCurrent();
 
                 Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
                 if (keyCode != null) {
@@ -49,8 +54,7 @@ public class EmuUIFrame extends JFrame {
         return canvas;
     }
 
-    public void setAppModel(AppModel appModel) {
-        this.appModel = appModel;
-        setTitle("SKTemu \u2013 " + appModel.getMidletTitle());
+    public void setAppInstance(AppInstance appInstance) {
+        this.appInstance = appInstance;
     }
 }

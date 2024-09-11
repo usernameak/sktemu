@@ -1,14 +1,13 @@
 package javax.microedition.midlet;
 
-import net.sktemu.ams.AmsClassLoader;
-import net.sktemu.ams.AppModel;
+import net.sktemu.ams.AppInstance;
 import net.sktemu.debug.FeatureNotImplementedError;
 
 public abstract class MIDlet {
-    private final AppModel appModel;
+    private final AppInstance appInstance;
 
     protected MIDlet() {
-        appModel = AppModel.appModelInstance;
+        appInstance = AppInstance.appInstance;
     }
 
     protected abstract void startApp() throws MIDletStateChangeException;
@@ -18,7 +17,7 @@ public abstract class MIDlet {
     protected abstract void destroyApp(boolean unconditional) throws MIDletStateChangeException;
 
     public final String getAppProperty(String key) {
-        return appModel.getAppProperty(key);
+        return appInstance.getAppModel().getAppProperty(key);
     }
 
     public final void notifyDestroyed() {
@@ -33,8 +32,8 @@ public abstract class MIDlet {
         throw new FeatureNotImplementedError("MIDlet::resumeRequest");
     }
 
-    public static AppModel getAppModel(MIDlet midlet) {
-        return midlet.appModel;
+    public static AppInstance getAppModel(MIDlet midlet) {
+        return midlet.appInstance;
     }
 
     public static void startMidlet(MIDlet midlet) throws MIDletStateChangeException {

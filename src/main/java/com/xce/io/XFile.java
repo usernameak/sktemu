@@ -1,6 +1,6 @@
 package com.xce.io;
 
-import net.sktemu.ams.AppModel;
+import net.sktemu.ams.AppInstance;
 import net.sktemu.debug.FeatureNotImplementedError;
 
 import java.io.File;
@@ -76,7 +76,7 @@ public class XFile {
     }
 
     static File convertFilePath(String path) {
-        return new File(AppModel.appModelInstance.getDataDir(), path);
+        return new File(AppInstance.appInstance.getAppModel().getDataDir(), path);
     }
 
     public static boolean exists(String name) throws IOException {

@@ -1,8 +1,6 @@
 package javax.microedition.lcdui;
 
 import net.sktemu.ams.AmsResourceManager;
-import net.sktemu.ams.AppModel;
-import net.sktemu.debug.FeatureNotImplementedError;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -11,7 +9,6 @@ import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 
 public class Image {
     private final BufferedImage image;

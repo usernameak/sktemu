@@ -1,6 +1,6 @@
 package javax.microedition.lcdui;
 
-import net.sktemu.ams.AppModel;
+import net.sktemu.ams.AppInstance;
 import net.sktemu.debug.FeatureNotImplementedError;
 import net.sktemu.ui.EmuCanvas;
 
@@ -46,7 +46,9 @@ public abstract class Canvas extends Displayable {
     public static final int KEY_VOL_UP = 194;
     public static final int KEY_VOL_DOWN = 195;
 
-    private final EmuCanvas emuCanvas = AppModel.appModelInstance.getEmuCanvas();
+    private boolean isShown = false;
+
+    private final EmuCanvas emuCanvas = AppInstance.appInstance.getEmuCanvas();
 
     protected Canvas() {
 
@@ -121,17 +123,17 @@ public abstract class Canvas extends Displayable {
     }
 
     public final void repaint() {
-        AppModel.appModelInstance.runOnAppThread(this::serviceRepaints);
+        AppInstance.appInstance.runOnAppThread(this::serviceRepaints);
     }
 
     public final void serviceRepaints() {
-        Display display = AppModel.appModelInstance.getDisplay();
+        Display display = AppInstance.appInstance.getDisplay();
         if (display.getCurrent() != Canvas.this) {
             return;
         }
 
         paint(emuCanvas.getMidpGraphics());
-        AppModel.appModelInstance.runOnUiThread(() -> AppModel.appModelInstance.getEmuCanvas().repaint());
+        AppInstance.appInstance.runOnUiThread(() -> AppInstance.appInstance.getEmuCanvas().repaint());
     }
 
     protected void showNotify() {
@@ -148,5 +150,16 @@ public abstract class Canvas extends Displayable {
 
     public static void emitKeyReleased(Canvas canvas, int keyCode) {
         canvas.keyReleased(keyCode);
+    }
+
+    public static void setCanvasShown(Canvas canvas, boolean isShown) {
+        if (canvas.isShown == isShown) return;
+
+        canvas.isShown = isShown;
+        if (isShown) {
+            canvas.showNotify();
+        } else {
+            canvas.hideNotify();
+        }
     }
 }

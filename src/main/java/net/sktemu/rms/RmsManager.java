@@ -63,9 +63,7 @@ public class RmsManager implements AutoCloseable {
             try (PreparedStatement stmt = sqlConn.prepareStatement("SELECT id FROM rms_stores WHERE name = ?;")) {
                 stmt.setString(1, name);
                 ResultSet res = stmt.executeQuery();
-                if (!res.first()) {
-                    throw new RecordStoreNotFoundException("no record store named " + name);
-                }
+                res.next();
                 id = res.getInt(1);
             }
 
