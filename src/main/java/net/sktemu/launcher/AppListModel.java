@@ -17,7 +17,9 @@ public class AppListModel extends AbstractListModel<AppModel> {
         if (oldSize > 0) {
             fireIntervalRemoved(this, 0, oldSize - 1);
         }
-        fireIntervalAdded(this, 0, apps.size() - 1);
+        if (!apps.isEmpty()) {
+            fireIntervalAdded(this, 0, apps.size() - 1);
+        }
     }
 
     public void addApp(AppModel appModel) {
