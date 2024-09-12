@@ -10,6 +10,9 @@ public class XTextField {
     private boolean hasFocus;
 
     public XTextField(String text, int maxSize, int constraints, Canvas canvas) {
+        if (text == null) {
+            text = "";
+        }
         this.text = text;
         this.maxSize = maxSize;
         this.constraints = constraints;
@@ -63,7 +66,10 @@ public class XTextField {
 
     }
 
-    public void setText(String s) {
-        this.text = s;
+    public void setText(String text) {
+        if (text == null) {
+            text = "";
+        }
+        this.text = text;
     }
 }

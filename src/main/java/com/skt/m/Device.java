@@ -20,6 +20,10 @@ public class Device {
         System.err.println("Device::setColorMode");
     }
 
+    public static void setKeyRepeatTime(int delay, int interval) {
+        System.err.println("Device::setKeyRepeatTime");
+    }
+
     public static void invokeWapBrowser(String url) {
         try {
             Desktop.getDesktop().browse(new URI(url));

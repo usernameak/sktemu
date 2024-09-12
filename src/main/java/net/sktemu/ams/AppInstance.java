@@ -180,14 +180,10 @@ public class AppInstance implements AutoCloseable {
     }
 
     public void blitGraphics() {
-        long time = System.nanoTime();
-
         synchronized (emuCanvas.getBufferedImage()) {
             backbufferImage.copyData(emuCanvas.getBufferedImage().getRaster());
         }
 
         runOnUiThread(emuCanvas::repaint);
-
-        System.out.println(System.nanoTime() - time);
     }
 }

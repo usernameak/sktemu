@@ -2,6 +2,7 @@ package net.sktemu.launcher;
 
 import net.sktemu.ams.AmsException;
 import net.sktemu.ams.AppModel;
+import net.sktemu.utils.SharedConstants;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -86,7 +87,7 @@ public class AppDatabase {
     }
 
     public AppModel installAppFromZip(File file) throws AmsException {
-        try (ZipFile zipFile = new ZipFile(file)) {
+        try (ZipFile zipFile = new ZipFile(file, SharedConstants.CP949)) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
             String msdFilename = null;

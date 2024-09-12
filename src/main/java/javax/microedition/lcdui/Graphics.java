@@ -137,11 +137,11 @@ public class Graphics {
     }
 
     public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        throw new FeatureNotImplementedError("Graphics::fillArc");
+        graphics2D.fillArc(x, y, width, height, startAngle, arcAngle);
     }
 
     public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        throw new FeatureNotImplementedError("Graphics::drawArc");
+        graphics2D.drawArc(x, y, width, height, startAngle, arcAngle);
     }
 
     public void drawString(String str, int x, int y, int anchor) {
