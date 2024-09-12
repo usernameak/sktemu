@@ -12,11 +12,13 @@ public class AmsClassLoader extends ClassLoader implements Closeable {
     private final JarFile jarFile;
 
     private final HashMap<String, Class<?>> classCache = new HashMap<>();
+    private final AppModel appModel;
 
-    public AmsClassLoader(File jarPath) throws IOException {
+    public AmsClassLoader(AppModel appModel) throws IOException, AmsException {
         super(AmsClassLoader.class.getClassLoader());
 
-        this.jarFile = new JarFile(jarPath);
+        this.appModel = appModel;
+        this.jarFile = new JarFile(appModel.doCacheJar());
     }
 
     @Override
@@ -36,7 +38,7 @@ public class AmsClassLoader extends ClassLoader implements Closeable {
             ClassReader classReader = new ClassReader(stream);
 
             ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-            AmsClassProcessor classProcessor = new AmsClassProcessor(classWriter);
+            AmsClassProcessor classProcessor = new AmsClassProcessor(classWriter, appModel.getDeviceProfile().getSecureUtilWorkaround());
 
             classReader.accept(classProcessor, 0);
 
@@ -56,7 +58,7 @@ public class AmsClassLoader extends ClassLoader implements Closeable {
         if (entry == null) {
             return null;
         }
-        return jarFile.getInputStream(entry);
+        return new FullyInputStream(jarFile.getInputStream(entry));
     }
 
     @Override

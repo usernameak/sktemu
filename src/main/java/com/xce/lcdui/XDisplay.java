@@ -5,15 +5,14 @@ import net.sktemu.ams.AppInstance;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
+import java.lang.reflect.InvocationTargetException;
 
 public class XDisplay {
     public static int width;
     public static int height2;
 
     public static void refresh(int x, int y, int width, int height) {
-        AppInstance.appInstance.runOnUiThread(() -> {
-            AppInstance.appInstance.getEmuCanvas().repaint();
-        });
+        AppInstance.appInstance.blitGraphics();
     }
 
     public static void drawImageEx(

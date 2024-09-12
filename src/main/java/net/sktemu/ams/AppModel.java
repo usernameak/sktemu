@@ -83,6 +83,11 @@ public class AppModel {
 
     public File doCacheJar() throws AmsException {
         File jarPath = new File(dataDir, appID + ".jar");
+        File cachedJarPath = new File(cacheDir, "app.jar");
+
+        if ("true".equals(System.getProperty("sktemu.assumePrecachedJars"))) {
+            return cachedJarPath;
+        }
 
         try (FileInputStream fis = new FileInputStream(jarPath);
              BufferedInputStream bis = new BufferedInputStream(fis)) {
@@ -100,7 +105,6 @@ public class AppModel {
                 }
             }
 
-            File cachedJarPath = new File(cacheDir, "app.jar");
             try {
                 Files.copy(bis, cachedJarPath.toPath(), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {

@@ -48,18 +48,16 @@ public abstract class Canvas extends Displayable {
 
     private boolean isShown = false;
 
-    private final EmuCanvas emuCanvas = AppInstance.appInstance.getEmuCanvas();
-
     protected Canvas() {
 
     }
 
     public int getWidth() {
-        return emuCanvas.getBufferedImage().getWidth();
+        return AppInstance.appInstance.getBackbufferImage().getWidth();
     }
 
     public int getHeight() {
-        return emuCanvas.getBufferedImage().getHeight();
+        return AppInstance.appInstance.getBackbufferImage().getHeight();
     }
 
     public boolean isDoubleBuffered() {
@@ -127,13 +125,15 @@ public abstract class Canvas extends Displayable {
     }
 
     public final void serviceRepaints() {
-        Display display = AppInstance.appInstance.getDisplay();
+        AppInstance app = AppInstance.appInstance;
+
+        Display display = app.getDisplay();
         if (display.getCurrent() != Canvas.this) {
             return;
         }
 
-        paint(emuCanvas.getMidpGraphics());
-        AppInstance.appInstance.runOnUiThread(() -> AppInstance.appInstance.getEmuCanvas().repaint());
+        paint(app.getMidpGraphics());
+        app.blitGraphics();
     }
 
     protected void showNotify() {
@@ -150,6 +150,11 @@ public abstract class Canvas extends Displayable {
 
     public static void emitKeyReleased(Canvas canvas, int keyCode) {
         canvas.keyReleased(keyCode);
+    }
+
+    @Override
+    public boolean isShown() {
+        return isShown;
     }
 
     public static void setCanvasShown(Canvas canvas, boolean isShown) {

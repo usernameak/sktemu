@@ -7,6 +7,7 @@ import java.util.Properties;
 public class AppDeviceProfile {
     private int screenWidth = 240;
     private int screenHeight = 320;
+    private boolean secureUtilWorkaround = false;
 
     public void loadDeviceProfile(File file) throws IOException {
         Properties propertyTable = new Properties();
@@ -18,10 +19,14 @@ public class AppDeviceProfile {
 
         try {
             screenWidth = Integer.parseInt(propertyTable.getProperty("screenWidth", "240"));
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) {
+        }
         try {
             screenHeight = Integer.parseInt(propertyTable.getProperty("screenHeight", "320"));
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) {
+        }
+
+        secureUtilWorkaround = Boolean.parseBoolean(propertyTable.getProperty("secureUtilWorkaround", "false"));
     }
 
     public void saveDeviceProfile(File file) throws IOException {
@@ -29,6 +34,7 @@ public class AppDeviceProfile {
 
         propertyTable.setProperty("screenWidth", Integer.toString(screenWidth));
         propertyTable.setProperty("screenHeight", Integer.toString(screenHeight));
+        propertyTable.setProperty("secureUtilWorkaround", Boolean.toString(secureUtilWorkaround));
 
         try (OutputStream stream = new FileOutputStream(file);
              OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
@@ -50,5 +56,13 @@ public class AppDeviceProfile {
 
     public void setScreenHeight(int screenHeight) {
         this.screenHeight = screenHeight;
+    }
+
+    public boolean getSecureUtilWorkaround() {
+        return secureUtilWorkaround;
+    }
+
+    public void setSecureUtilWorkaround(boolean secureUtilWorkaround) {
+        this.secureUtilWorkaround = secureUtilWorkaround;
     }
 }

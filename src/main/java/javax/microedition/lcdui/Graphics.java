@@ -174,16 +174,19 @@ public class Graphics {
 
     public void drawImage(Image img, int x, int y, int anchor) {
         BufferedImage bimg = Image.getBufferedImage(img);
+
         if ((anchor & HCENTER) == HCENTER) {
             x -= bimg.getWidth() / 2;
         } else if ((anchor & RIGHT) == RIGHT) {
             x -= bimg.getWidth();
         }
+
         if ((anchor & VCENTER) == VCENTER) {
             y -= bimg.getHeight() / 2;
         } else if ((anchor & BOTTOM) == BOTTOM) {
             y -= bimg.getHeight();
         }
+
         graphics2D.drawImage(bimg, x, y, null);
     }
 

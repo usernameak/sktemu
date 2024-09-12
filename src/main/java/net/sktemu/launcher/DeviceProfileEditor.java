@@ -17,22 +17,25 @@ public class DeviceProfileEditor extends JDialog {
         AppDeviceProfile deviceProfile = appModel.getDeviceProfile();
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new MigLayout("", "[][80,grow,fill]", "[][][nogrid]"));
+        mainPanel.setLayout(new MigLayout("", "[][80,grow,fill]", "[][][][nogrid]"));
 
-        JTextField fieldScreenWidth = new JTextField(Integer.toString(deviceProfile.getScreenWidth()));
-        JTextField fieldScreenHeight = new JTextField(Integer.toString(deviceProfile.getScreenHeight()));
+        JTextField tfScreenWidth = new JTextField(Integer.toString(deviceProfile.getScreenWidth()));
+        JTextField tfScreenHeight = new JTextField(Integer.toString(deviceProfile.getScreenHeight()));
+        JCheckBox cbSecureUtilWorkaround = new JCheckBox("SecureUtil Workaround", deviceProfile.getSecureUtilWorkaround());
 
         mainPanel.add(new JLabel("Screen Width:"));
-        mainPanel.add(fieldScreenWidth, "wrap");
+        mainPanel.add(tfScreenWidth, "wrap");
         mainPanel.add(new JLabel("Screen Height:"));
-        mainPanel.add(fieldScreenHeight, "wrap");
+        mainPanel.add(tfScreenHeight, "wrap");
+        mainPanel.add(cbSecureUtilWorkaround, "spanx 2,wrap");
 
         Action okAction = new AbstractAction("OK") {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    deviceProfile.setScreenWidth(Integer.parseInt(fieldScreenWidth.getText()));
-                    deviceProfile.setScreenHeight(Integer.parseInt(fieldScreenHeight.getText()));
+                    deviceProfile.setScreenWidth(Integer.parseInt(tfScreenWidth.getText()));
+                    deviceProfile.setScreenHeight(Integer.parseInt(tfScreenHeight.getText()));
+                    deviceProfile.setSecureUtilWorkaround(cbSecureUtilWorkaround.isSelected());
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(
                             DeviceProfileEditor.this,

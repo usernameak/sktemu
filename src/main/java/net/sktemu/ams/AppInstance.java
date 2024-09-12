@@ -6,10 +6,12 @@ import net.sktemu.ui.EmuUIFrame;
 import net.sktemu.xceapi.XceApiManager;
 
 import javax.microedition.lcdui.Display;
+import javax.microedition.lcdui.Graphics;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 import javax.microedition.rms.RecordStoreException;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
@@ -22,6 +24,8 @@ public class AppInstance implements AutoCloseable {
     private final AppModel appModel;
     private AmsClassLoader classLoader;
     private Display display;
+    private BufferedImage backbufferImage;
+    private Graphics midpGraphics;
     private final EmuCanvas emuCanvas;
     private RmsManager rmsManager;
 
@@ -68,11 +72,17 @@ public class AppInstance implements AutoCloseable {
         }
 
         try {
-            classLoader = new AmsClassLoader(appModel.doCacheJar());
+            classLoader = new AmsClassLoader(appModel);
         } catch (IOException e) {
             throw new AmsException(e);
         }
 
+        backbufferImage = new BufferedImage(
+                emuCanvas.getBufferedImage().getWidth(),
+                emuCanvas.getBufferedImage().getHeight(),
+                BufferedImage.TYPE_INT_RGB
+        );
+        midpGraphics = new Graphics(backbufferImage);
         XceApiManager.initializeLCDUI(this);
 
         runOnAppThread(() -> {
@@ -159,5 +169,25 @@ public class AppInstance implements AutoCloseable {
         AppInstance appInstance = new AppInstance(appModel, ui.getCanvas());
         ui.setAppInstance(appInstance);
         appInstance.initAppInstance();
+    }
+
+    public BufferedImage getBackbufferImage() {
+        return backbufferImage;
+    }
+
+    public Graphics getMidpGraphics() {
+        return midpGraphics;
+    }
+
+    public void blitGraphics() {
+        long time = System.nanoTime();
+
+        synchronized (emuCanvas.getBufferedImage()) {
+            backbufferImage.copyData(emuCanvas.getBufferedImage().getRaster());
+        }
+
+        runOnUiThread(emuCanvas::repaint);
+
+        System.out.println(System.nanoTime() - time);
     }
 }

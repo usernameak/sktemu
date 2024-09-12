@@ -97,7 +97,7 @@ public class LauncherFrame extends JFrame {
         appsList.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) return;
+                if (e.getKeyCode() != KeyEvent.VK_ENTER) return;
 
                 AppModel appModel = appListModel.getElementAt(appsList.getSelectedIndex());
                 launchApp(appModel);

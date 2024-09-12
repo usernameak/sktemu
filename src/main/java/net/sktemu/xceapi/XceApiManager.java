@@ -9,11 +9,9 @@ public abstract class XceApiManager {
     private XceApiManager() {}
 
     public static void initializeLCDUI(AppInstance appInstance) {
-        EmuCanvas emuCanvas = appInstance.getEmuCanvas();
+        XDisplay.width = appInstance.getBackbufferImage().getWidth();
+        XDisplay.height2 = appInstance.getBackbufferImage().getHeight();
 
-        XDisplay.width = emuCanvas.getBufferedImage().getWidth();
-        XDisplay.height2 = emuCanvas.getBufferedImage().getHeight();
-
-        Toolkit.graphics = emuCanvas.getMidpGraphics();
+        Toolkit.graphics = appInstance.getMidpGraphics();
     }
 }

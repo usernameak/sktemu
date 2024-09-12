@@ -4,6 +4,7 @@ import net.sktemu.ams.AppInstance;
 
 public class RecordStore {
     private int storeID;
+    private boolean isClosed = false;
 
     private RecordStore(int storeID) {
         this.storeID = storeID;
@@ -29,6 +30,14 @@ public class RecordStore {
     }
 
     public void closeRecordStore() throws RecordStoreException {
-        // do nothing
+        isClosed = true;
+    }
+
+    public byte[] getRecord(int recordID) throws RecordStoreException {
+        if (isClosed) {
+            throw new RecordStoreNotOpenException();
+        }
+
+        throw new RecordStoreException("RecordStore.getRecord() not implemented");
     }
 }

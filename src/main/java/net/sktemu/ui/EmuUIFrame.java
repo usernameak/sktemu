@@ -30,21 +30,25 @@ public class EmuUIFrame extends JFrame {
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                Canvas canvas = (Canvas) appInstance.getDisplay().getCurrent();
-
                 Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
+
                 if (keyCode != null) {
-                    Canvas.emitKeyPressed(canvas, keyCode);
+                    appInstance.runOnAppThread(() -> {
+                        Canvas canvas = (Canvas) appInstance.getDisplay().getCurrent();
+                        Canvas.emitKeyPressed(canvas, keyCode);
+                    });
                 }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                Canvas canvas = (Canvas) appInstance.getDisplay().getCurrent();
-
                 Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
+
                 if (keyCode != null) {
-                    Canvas.emitKeyReleased(canvas, keyCode);
+                    appInstance.runOnAppThread(() -> {
+                        Canvas canvas = (Canvas) appInstance.getDisplay().getCurrent();
+                        Canvas.emitKeyReleased(canvas, keyCode);
+                    });
                 }
             }
         });
