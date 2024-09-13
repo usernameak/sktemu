@@ -25,3 +25,10 @@ jobs:
         with:
           name: SKTemu
           path: 'target/sktemu-*.jar'
+      - name: Update nightly release
+        uses: pyTooling/Actions/releaser@main
+        with:
+          tag: nightly
+          rm: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: 'target/sktemu-*.jar'
