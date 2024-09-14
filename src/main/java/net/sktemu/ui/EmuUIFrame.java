@@ -8,6 +8,8 @@ import javax.microedition.lcdui.Canvas;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class EmuUIFrame extends JFrame {
     private final EmuCanvas canvas;
@@ -23,9 +25,22 @@ public class EmuUIFrame extends JFrame {
         );
         setContentPane(canvas);
 
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-
         pack();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    if (appInstance != null && !appInstance.shutdown()) return;
+                } catch (Throwable ex) {
+                    ex.printStackTrace();
+                    System.exit(1);
+                    return;
+                }
+
+                System.exit(0);
+            }
+        });
 
         addKeyListener(new KeyAdapter() {
             @Override

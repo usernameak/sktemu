@@ -35,6 +35,8 @@ public class AppInstance implements AutoCloseable {
 
     private long lastPresentTime = 0;
 
+    private MIDlet midlet;
+
     static {
         AmsSysPropManager.init();
     }
@@ -101,7 +103,7 @@ public class AppInstance implements AutoCloseable {
                 try {
                     Object midletObj = midletClass.getConstructor().newInstance();
                     if (midletObj instanceof MIDlet) {
-                        MIDlet midlet = (MIDlet) midletObj;
+                        midlet = (MIDlet) midletObj;
                         System.out.println("midlet load");
 
                         MIDlet.startMidlet(midlet);
@@ -213,5 +215,18 @@ public class AppInstance implements AutoCloseable {
         }
 
         runOnUiThread(emuCanvas::repaint);
+    }
+
+    public boolean shutdown() {
+        try {
+            MIDlet.destroyMidlet(midlet);
+        } catch (MIDletStateChangeException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public void onShutdown() {
+        System.exit(0);
     }
 }

@@ -21,15 +21,20 @@ public abstract class MIDlet {
     }
 
     public final void notifyDestroyed() {
-        throw new FeatureNotImplementedError("MIDlet::notifyDestroyed");
+        appInstance.onShutdown();
     }
 
     public final void notifyPaused() {
-        throw new FeatureNotImplementedError("MIDlet::notifyPaused");
+        pauseApp();
     }
 
     public final void resumeRequest() {
-        throw new FeatureNotImplementedError("MIDlet::resumeRequest");
+        try {
+            startApp();
+        } catch (MIDletStateChangeException e) {
+            // i guess...?
+            e.printStackTrace();
+        }
     }
 
     public static AppInstance getAppModel(MIDlet midlet) {
@@ -38,5 +43,9 @@ public abstract class MIDlet {
 
     public static void startMidlet(MIDlet midlet) throws MIDletStateChangeException {
         midlet.startApp();
+    }
+
+    public static void destroyMidlet(MIDlet midlet) throws MIDletStateChangeException {
+        midlet.destroyApp(false);
     }
 }
