@@ -29,6 +29,7 @@ jobs:
           path: 'target/sktemu-*.jar'
       - name: Update nightly release
         uses: pyTooling/Actions/releaser@main
+        if: github.ref == 'refs/heads/master'
         with:
           tag: nightly
           rm: true
