@@ -1,6 +1,7 @@
 package javax.microedition.lcdui;
 
 import net.sktemu.ams.AppInstance;
+import net.sktemu.ams.skvm.SkvmAppInstance;
 import net.sktemu.ui.EmuCanvas;
 
 import javax.microedition.midlet.MIDlet;
@@ -11,7 +12,7 @@ public class Display {
     private Displayable current;
 
     public static Display getDisplay(MIDlet midlet) {
-        AppInstance appInstance = MIDlet.getAppModel(midlet);
+        SkvmAppInstance appInstance = MIDlet.getAppModel(midlet);
         return appInstance.getDisplay();
     }
 

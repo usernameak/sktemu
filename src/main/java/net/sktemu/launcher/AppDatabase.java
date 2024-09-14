@@ -2,6 +2,9 @@ package net.sktemu.launcher;
 
 import net.sktemu.ams.AmsException;
 import net.sktemu.ams.AppModel;
+import net.sktemu.ams.AppModelFactory;
+import net.sktemu.ams.AppModelFactoryManager;
+import net.sktemu.ams.skvm.SkvmAppModel;
 import net.sktemu.utils.SharedConstants;
 
 import java.io.File;
@@ -33,23 +36,10 @@ public class AppDatabase {
         }
 
         for (File appDir : appDirs) {
-            if (!appDir.isDirectory()) continue;
+            AppModelFactory factory = AppModelFactoryManager.detectFactory(appDir);
+            if (factory == null) continue;
 
-            File[] files = appDir.listFiles();
-            if (files == null) continue;
-
-            boolean msdFound = false;
-            for (File file : files) {
-                String name = file.getName();
-                if (!name.endsWith(".msd")) continue;
-
-                msdFound = true;
-                break;
-            }
-
-            if (!msdFound) continue;
-
-            apps.add(new AppModel(appDir));
+            apps.add(factory.createAppModel(appDir));
         }
     }
 
@@ -86,7 +76,7 @@ public class AppDatabase {
         }
     }
 
-    public AppModel installAppFromZip(File file) throws AmsException {
+    public AppModel installSkvmAppFromZip(File file) throws AmsException {
         try (ZipFile zipFile = new ZipFile(file, SharedConstants.CP949)) {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
@@ -107,7 +97,7 @@ public class AppDatabase {
             File appDir = new File(appsDirectory, appDirName);
             zipExtract(zipFile, appDir);
 
-            AppModel appModel = new AppModel(appDir);
+            AppModel appModel = new SkvmAppModel(appDir);
             apps.add(appModel);
             return appModel;
         } catch (IOException e) {

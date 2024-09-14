@@ -11,7 +11,7 @@ public class AppListCellRenderer extends DefaultListCellRenderer {
         Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
         if (c instanceof JLabel) {
-            ((JLabel) c).setText(((AppModel) value).getMidletTitle());
+            ((JLabel) c).setText(((AppModel) value).getAppTitle());
         }
 
         return c;

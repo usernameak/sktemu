@@ -1,6 +1,5 @@
 package net.sktemu.ui;
 
-import net.sktemu.ams.AppDeviceProfile;
 import net.sktemu.ams.AppInstance;
 import net.sktemu.ams.AppModel;
 
@@ -17,7 +16,7 @@ public class EmuUIFrame extends JFrame {
     private AppInstance appInstance;
 
     public EmuUIFrame(AppModel appModel) {
-        setTitle("SKTemu \u2013 " + appModel.getMidletTitle());
+        setTitle("SKTemu \u2013 " + appModel.getAppTitle());
 
         canvas = new EmuCanvas(
                 appModel.getDeviceProfile().getScreenWidth(),
@@ -48,10 +47,7 @@ public class EmuUIFrame extends JFrame {
                 Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
 
                 if (keyCode != null) {
-                    appInstance.runOnAppThread(() -> {
-                        Canvas canvas = (Canvas) appInstance.getDisplay().getCurrent();
-                        Canvas.emitKeyPressed(canvas, keyCode);
-                    });
+                    appInstance.keyPressed(keyCode);
                 }
             }
 
@@ -60,10 +56,7 @@ public class EmuUIFrame extends JFrame {
                 Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
 
                 if (keyCode != null) {
-                    appInstance.runOnAppThread(() -> {
-                        Canvas canvas = (Canvas) appInstance.getDisplay().getCurrent();
-                        Canvas.emitKeyReleased(canvas, keyCode);
-                    });
+                    appInstance.keyReleased(keyCode);
                 }
             }
         });

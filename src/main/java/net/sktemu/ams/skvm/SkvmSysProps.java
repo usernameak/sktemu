@@ -1,6 +1,6 @@
-package net.sktemu.ams;
+package net.sktemu.ams.skvm;
 
-public class AmsSysPropManager {
+public class SkvmSysProps {
     public static void init() {
         System.setProperty("com.xce.wipi.version", "1.0.0");
         System.setProperty("m.SK_VM", "12");

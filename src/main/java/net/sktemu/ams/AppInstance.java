@@ -1,33 +1,21 @@
 package net.sktemu.ams;
 
-import net.sktemu.rms.RmsManager;
 import net.sktemu.ui.EmuCanvas;
 import net.sktemu.ui.EmuUIFrame;
-import net.sktemu.xceapi.XceApiManager;
 
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Graphics;
-import javax.microedition.midlet.MIDlet;
-import javax.microedition.midlet.MIDletStateChangeException;
-import javax.microedition.rms.RecordStoreException;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class AppInstance implements AutoCloseable {
+public abstract class AppInstance implements AutoCloseable {
     public static AppInstance appInstance = null;
 
-    private final AppModel appModel;
-    private AmsClassLoader classLoader;
-    private Display display;
+    public final AppModel appModel;
     private BufferedImage backbufferImage;
-    private Graphics midpGraphics;
     private final EmuCanvas emuCanvas;
-    private RmsManager rmsManager;
 
     private ExecutorService appThreadExecutor;
 
@@ -35,21 +23,21 @@ public class AppInstance implements AutoCloseable {
 
     private long lastPresentTime = 0;
 
-    private MIDlet midlet;
-
-    static {
-        AmsSysPropManager.init();
-    }
-
-    public AppInstance(AppModel appModel, EmuCanvas emuCanvas) throws IOException {
+    public AppInstance(AppModel appModel, EmuCanvas emuCanvas) {
         this.appModel = appModel;
         this.emuCanvas = emuCanvas;
-
-        rmsManager = new RmsManager();
     }
 
     public EmuCanvas getEmuCanvas() {
         return emuCanvas;
+    }
+
+    public AppModel getAppModel() {
+        return appModel;
+    }
+
+    public BufferedImage getBackbufferImage() {
+        return backbufferImage;
     }
 
     public void runOnAppThread(Runnable runnable) {
@@ -60,78 +48,16 @@ public class AppInstance implements AutoCloseable {
         SwingUtilities.invokeLater(runnable);
     }
 
-    public RmsManager getRmsManager() {
-        return rmsManager;
-    }
-
     public void initAppInstance() throws AmsException {
         appInstance = this;
 
         appThreadExecutor = Executors.newSingleThreadExecutor();
-
-        display = new Display();
-
-        try {
-            rmsManager.initialize(appModel.getCacheDir());
-        } catch (RecordStoreException e) {
-            throw new AmsException(e);
-        }
-
-        try {
-            classLoader = new AmsClassLoader(appModel);
-        } catch (IOException e) {
-            throw new AmsException(e);
-        }
 
         backbufferImage = new BufferedImage(
                 emuCanvas.getBufferedImage().getWidth(),
                 emuCanvas.getBufferedImage().getHeight(),
                 BufferedImage.TYPE_INT_RGB
         );
-        midpGraphics = new Graphics(backbufferImage);
-        XceApiManager.initializeLCDUI(this);
-
-        runOnAppThread(() -> {
-            try {
-                Class<?> midletClass;
-                try {
-                    midletClass = classLoader.loadClass(appModel.getMidletClassName());
-                } catch (ClassNotFoundException e) {
-                    throw new AmsException("MIDlet class not found", e);
-                }
-
-                try {
-                    Object midletObj = midletClass.getConstructor().newInstance();
-                    if (midletObj instanceof MIDlet) {
-                        midlet = (MIDlet) midletObj;
-                        System.out.println("midlet load");
-
-                        MIDlet.startMidlet(midlet);
-                    }
-                } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-                    throw new AmsException("MIDlet creation failed", e);
-                } catch (InvocationTargetException e) {
-                    throw new AmsException("MIDlet creation failed", e.getCause());
-                } catch (MIDletStateChangeException e) {
-                    throw new AmsException("MIDletStateChangeException", e);
-                }
-            } catch (AmsException e) {
-                // TODO: this is shit
-                e.printStackTrace();
-            }
-        });
-    }
-
-    public Display getDisplay() {
-        return display;
-    }
-
-    public AmsClassLoader getClassLoader() {
-        return classLoader;
-    }
-
-    public AppModel getAppModel() {
-        return appModel;
     }
 
     @Override
@@ -145,24 +71,6 @@ public class AppInstance implements AutoCloseable {
                     throw new AmsException("termination interrupted", e);
                 }
             }
-            AmsException exception = null;
-            if (rmsManager != null) {
-                try {
-                    rmsManager.close();
-                } catch (RecordStoreException e) {
-                    exception = new AmsException("failed to close rms manager", e);
-                }
-            }
-            if (classLoader != null) {
-                try {
-                    classLoader.close();
-                } catch (IOException e) {
-                    exception = new AmsException("failed to close classloader", e);
-                }
-            }
-            if (exception != null) {
-                throw exception;
-            }
         } finally {
             appInstance = null;
         }
@@ -172,17 +80,9 @@ public class AppInstance implements AutoCloseable {
         EmuUIFrame ui = new EmuUIFrame(appModel);
         ui.setVisible(true);
 
-        AppInstance appInstance = new AppInstance(appModel, ui.getCanvas());
+        AppInstance appInstance = appModel.createAppInstance(ui.getCanvas());
         ui.setAppInstance(appInstance);
         appInstance.initAppInstance();
-    }
-
-    public BufferedImage getBackbufferImage() {
-        return backbufferImage;
-    }
-
-    public Graphics getMidpGraphics() {
-        return midpGraphics;
     }
 
     public void blitGraphics() {
@@ -217,16 +117,14 @@ public class AppInstance implements AutoCloseable {
         runOnUiThread(emuCanvas::repaint);
     }
 
-    public boolean shutdown() {
-        try {
-            MIDlet.destroyMidlet(midlet);
-        } catch (MIDletStateChangeException e) {
-            return false;
-        }
-        return true;
-    }
-
     public void onShutdown() {
         System.exit(0);
     }
+
+    public abstract boolean shutdown();
+
+    public abstract void keyPressed(int keyCode);
+    public abstract void keyReleased(int keyCode);
+
+    public abstract AmsClassLoader getClassLoader();
 }

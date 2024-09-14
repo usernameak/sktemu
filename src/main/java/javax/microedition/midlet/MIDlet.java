@@ -1,13 +1,15 @@
 package javax.microedition.midlet;
 
 import net.sktemu.ams.AppInstance;
+import net.sktemu.ams.skvm.SkvmAppInstance;
+import net.sktemu.ams.skvm.SkvmAppModel;
 import net.sktemu.debug.FeatureNotImplementedError;
 
 public abstract class MIDlet {
-    private final AppInstance appInstance;
+    private final SkvmAppInstance appInstance;
 
     protected MIDlet() {
-        appInstance = AppInstance.appInstance;
+        appInstance = (SkvmAppInstance) AppInstance.appInstance;
     }
 
     protected abstract void startApp() throws MIDletStateChangeException;
@@ -17,7 +19,7 @@ public abstract class MIDlet {
     protected abstract void destroyApp(boolean unconditional) throws MIDletStateChangeException;
 
     public final String getAppProperty(String key) {
-        return appInstance.getAppModel().getAppProperty(key);
+        return ((SkvmAppModel) appInstance.getAppModel()).getAppProperty(key);
     }
 
     public final void notifyDestroyed() {
@@ -37,7 +39,7 @@ public abstract class MIDlet {
         }
     }
 
-    public static AppInstance getAppModel(MIDlet midlet) {
+    public static SkvmAppInstance getAppModel(MIDlet midlet) {
         return midlet.appInstance;
     }
 

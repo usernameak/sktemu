@@ -1,6 +1,7 @@
 package javax.microedition.rms;
 
 import net.sktemu.ams.AppInstance;
+import net.sktemu.ams.skvm.SkvmAppInstance;
 
 public class RecordStore {
     private int storeID;
@@ -12,21 +13,24 @@ public class RecordStore {
 
     public static RecordStore openRecordStore(String recordStoreName, boolean createIfNecessary)
             throws RecordStoreException {
+        SkvmAppInstance skvmAppInstance = (SkvmAppInstance) AppInstance.appInstance;
         return new RecordStore(
-                AppInstance.appInstance.getRmsManager().getRecordStoreID(recordStoreName, createIfNecessary)
+                skvmAppInstance.getRmsManager().getRecordStoreID(recordStoreName, createIfNecessary)
         );
     }
 
     public static String[] listRecordStores() {
+        SkvmAppInstance skvmAppInstance = (SkvmAppInstance) AppInstance.appInstance;
         try {
-            return AppInstance.appInstance.getRmsManager().listRecordStores();
+            return skvmAppInstance.getRmsManager().listRecordStores();
         } catch (RecordStoreException e) {
             throw new RuntimeException(e);
         }
     }
 
     public static void deleteRecordStore(String recordStoreName) throws RecordStoreException {
-        AppInstance.appInstance.getRmsManager().deleteRecordStore(recordStoreName);
+        SkvmAppInstance skvmAppInstance = (SkvmAppInstance) AppInstance.appInstance;
+        skvmAppInstance.getRmsManager().deleteRecordStore(recordStoreName);
     }
 
     public void closeRecordStore() throws RecordStoreException {

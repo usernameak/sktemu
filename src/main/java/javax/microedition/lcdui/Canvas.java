@@ -1,6 +1,7 @@
 package javax.microedition.lcdui;
 
 import net.sktemu.ams.AppInstance;
+import net.sktemu.ams.skvm.SkvmAppInstance;
 import net.sktemu.debug.FeatureNotImplementedError;
 import net.sktemu.ui.EmuCanvas;
 
@@ -125,7 +126,7 @@ public abstract class Canvas extends Displayable {
     }
 
     public final void serviceRepaints() {
-        AppInstance app = AppInstance.appInstance;
+        SkvmAppInstance app = (SkvmAppInstance) AppInstance.appInstance;
 
         Display display = app.getDisplay();
         if (display.getCurrent() != Canvas.this) {

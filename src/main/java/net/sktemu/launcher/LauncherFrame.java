@@ -28,7 +28,7 @@ public class LauncherFrame extends JFrame {
         menuApp.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menuApp);
 
-        JMenuItem menuItemInstallApp = new JMenuItem("Install App...", KeyEvent.VK_I);
+        JMenuItem menuItemInstallApp = new JMenuItem("Install SK-VM App...", KeyEvent.VK_I);
         menuItemInstallApp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_MASK));
         menuItemInstallApp.addActionListener(ev -> {
             JFileChooser fileChooser = new JFileChooser();
@@ -38,7 +38,7 @@ public class LauncherFrame extends JFrame {
             int returnVal = fileChooser.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 try {
-                    appListModel.addApp(appDatabase.installAppFromZip(fileChooser.getSelectedFile()));
+                    appListModel.addApp(appDatabase.installSkvmAppFromZip(fileChooser.getSelectedFile()));
                 } catch (AmsException e) {
                     JOptionPane.showMessageDialog(
                             this,

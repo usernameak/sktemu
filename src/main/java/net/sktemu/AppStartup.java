@@ -3,9 +3,7 @@ package net.sktemu;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
-import net.sktemu.ams.AmsException;
-import net.sktemu.ams.AppInstance;
-import net.sktemu.ams.AppModel;
+import net.sktemu.ams.*;
 import net.sktemu.launcher.LauncherStartup;
 import net.sktemu.ui.EmuUIFrame;
 
@@ -39,7 +37,11 @@ public class AppStartup implements Runnable {
 
     private void swingRun() {
         try {
-            AppModel appModel = new AppModel(appDir);
+            AppModelFactory factory = AppModelFactoryManager.detectFactory(appDir);
+            if (factory == null) {
+                throw new AmsException("unsupported app type");
+            }
+            AppModel appModel = factory.createAppModel(appDir);
             AppInstance.launchApp(appModel);
         } catch (AmsException | IOException e) {
             throw new RuntimeException(e);
