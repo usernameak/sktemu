@@ -1,6 +1,9 @@
 package net.sktemu.ams;
 
+import net.sktemu.ams.classproc.AmsClassProcessor;
+import net.sktemu.ams.classproc.ClassProcessorFactory;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 
 import java.io.*;
@@ -13,6 +16,7 @@ public class AmsClassLoader extends ClassLoader implements Closeable {
 
     private final HashMap<String, Class<?>> classCache = new HashMap<>();
     private final AppModel appModel;
+    private final ClassProcessorFactory classProcessorFactory = AmsClassProcessor::new;
 
     public AmsClassLoader(AppModel appModel) throws IOException, AmsException {
         super(AmsClassLoader.class.getClassLoader());
@@ -38,8 +42,8 @@ public class AmsClassLoader extends ClassLoader implements Closeable {
             ClassReader classReader = new ClassReader(stream);
 
             ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-            AmsClassProcessor classProcessor = new AmsClassProcessor(classWriter, appModel.getDeviceProfile().getSecureUtilWorkaround());
 
+            ClassVisitor classProcessor = classProcessorFactory.createClassProcessor(classWriter, appModel);
             classReader.accept(classProcessor, 0);
 
             byte[] data = classWriter.toByteArray();

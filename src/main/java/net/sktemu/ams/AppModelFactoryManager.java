@@ -1,5 +1,6 @@
 package net.sktemu.ams;
 
+import net.sktemu.ams.doja.DojaAppModelFactory;
 import net.sktemu.ams.skvm.SkvmAppModelFactory;
 
 import java.io.File;
@@ -20,6 +21,7 @@ public class AppModelFactoryManager {
     }
 
     static {
+        factories.add(new DojaAppModelFactory());
         factories.add(new SkvmAppModelFactory());
     }
 }
