@@ -7,6 +7,7 @@ import java.util.Properties;
 public class AppDeviceProfile {
     private int screenWidth = 240;
     private int screenHeight = 320;
+    private int maxFps = 0;
     private boolean secureUtilWorkaround = false;
 
     public void loadDeviceProfile(File file) throws IOException {
@@ -25,6 +26,10 @@ public class AppDeviceProfile {
             screenHeight = Integer.parseInt(propertyTable.getProperty("screenHeight", "320"));
         } catch (NumberFormatException ignored) {
         }
+        try {
+            maxFps = Integer.parseInt(propertyTable.getProperty("maxFps", "0"));
+        } catch (NumberFormatException ignored) {
+        }
 
         secureUtilWorkaround = Boolean.parseBoolean(propertyTable.getProperty("secureUtilWorkaround", "false"));
     }
@@ -34,6 +39,7 @@ public class AppDeviceProfile {
 
         propertyTable.setProperty("screenWidth", Integer.toString(screenWidth));
         propertyTable.setProperty("screenHeight", Integer.toString(screenHeight));
+        propertyTable.setProperty("maxFps", Integer.toString(maxFps));
         propertyTable.setProperty("secureUtilWorkaround", Boolean.toString(secureUtilWorkaround));
 
         try (OutputStream stream = new FileOutputStream(file);
@@ -56,6 +62,14 @@ public class AppDeviceProfile {
 
     public void setScreenHeight(int screenHeight) {
         this.screenHeight = screenHeight;
+    }
+
+    public int getMaxFps() {
+        return maxFps;
+    }
+
+    public void setMaxFps(int maxFps) {
+        this.maxFps = maxFps;
     }
 
     public boolean getSecureUtilWorkaround() {

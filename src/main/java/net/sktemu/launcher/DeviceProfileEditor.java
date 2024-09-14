@@ -17,16 +17,19 @@ public class DeviceProfileEditor extends JDialog {
         AppDeviceProfile deviceProfile = appModel.getDeviceProfile();
 
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new MigLayout("", "[][80,grow,fill]", "[][][][nogrid]"));
+        mainPanel.setLayout(new MigLayout("", "[][80,grow,fill]", "[][][][][nogrid]"));
 
         JTextField tfScreenWidth = new JTextField(Integer.toString(deviceProfile.getScreenWidth()));
         JTextField tfScreenHeight = new JTextField(Integer.toString(deviceProfile.getScreenHeight()));
+        JTextField tfMaxFps = new JTextField(Integer.toString(deviceProfile.getMaxFps()));
         JCheckBox cbSecureUtilWorkaround = new JCheckBox("SecureUtil Workaround", deviceProfile.getSecureUtilWorkaround());
 
         mainPanel.add(new JLabel("Screen Width:"));
         mainPanel.add(tfScreenWidth, "wrap");
         mainPanel.add(new JLabel("Screen Height:"));
         mainPanel.add(tfScreenHeight, "wrap");
+        mainPanel.add(new JLabel("Max FPS:"));
+        mainPanel.add(tfMaxFps, "wrap");
         mainPanel.add(cbSecureUtilWorkaround, "spanx 2,wrap");
 
         Action okAction = new AbstractAction("OK") {
@@ -35,6 +38,7 @@ public class DeviceProfileEditor extends JDialog {
                 try {
                     deviceProfile.setScreenWidth(Integer.parseInt(tfScreenWidth.getText()));
                     deviceProfile.setScreenHeight(Integer.parseInt(tfScreenHeight.getText()));
+                    deviceProfile.setMaxFps(Integer.parseInt(tfMaxFps.getText()));
                     deviceProfile.setSecureUtilWorkaround(cbSecureUtilWorkaround.isSelected());
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(

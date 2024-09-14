@@ -31,6 +31,10 @@ public class AppInstance implements AutoCloseable {
 
     private ExecutorService appThreadExecutor;
 
+    private final Object frameLimiterLock = new Object();
+
+    private long lastPresentTime = 0;
+
     static {
         AmsSysPropManager.init();
     }
@@ -180,6 +184,30 @@ public class AppInstance implements AutoCloseable {
     }
 
     public void blitGraphics() {
+        int maxFps = getAppModel().getDeviceProfile().getMaxFps();
+
+        if (maxFps > 0) {
+            synchronized (frameLimiterLock) {
+                long presentTime = System.nanoTime();
+                long deltaTime = 1_000_000_000L / maxFps - (presentTime - lastPresentTime);
+
+                if (deltaTime > 0) {
+                    try {
+                        Thread.sleep(deltaTime / 1_000_000L, (int) (deltaTime % 1_000_000));
+                    } catch (InterruptedException ignored) {
+                        Thread.currentThread().interrupt();
+                        return;
+                    }
+                }
+
+                if (deltaTime < -20_000_000L) {
+                    lastPresentTime = presentTime - 20; // overrun
+                } else {
+                    lastPresentTime = presentTime + deltaTime;
+                }
+            }
+        }
+
         synchronized (emuCanvas.getBufferedImage()) {
             backbufferImage.copyData(emuCanvas.getBufferedImage().getRaster());
         }
