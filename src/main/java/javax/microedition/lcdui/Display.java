@@ -16,6 +16,14 @@ public class Display {
         return appInstance.getDisplay();
     }
 
+    public boolean isColor() {
+        return true;
+    }
+
+    public int numColors() {
+        return 1 << 24;
+    }
+
     public Displayable getCurrent() {
         return current;
     }
@@ -33,6 +41,10 @@ public class Display {
         this.current = current;
 
         _ui_doRepaint();
+    }
+
+    public void callSerially(Runnable r) {
+        AppInstance.appInstance.runOnAppThread(r);
     }
 
     public void _ui_doRepaint() {
