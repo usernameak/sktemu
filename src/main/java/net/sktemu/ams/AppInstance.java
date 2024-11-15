@@ -6,9 +6,6 @@ import net.sktemu.ui.EmuUIFrame;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public abstract class AppInstance implements AutoCloseable {
     public static AppInstance appInstance = null;
@@ -17,7 +14,7 @@ public abstract class AppInstance implements AutoCloseable {
     private BufferedImage backbufferImage;
     private final EmuCanvas emuCanvas;
 
-    private ExecutorService appThreadExecutor;
+    private final AppLoopManager appLoopManager = new AppLoopManager();
 
     private final Object frameLimiterLock = new Object();
 
@@ -41,7 +38,7 @@ public abstract class AppInstance implements AutoCloseable {
     }
 
     public void runOnAppThread(Runnable runnable) {
-        appThreadExecutor.execute(runnable);
+        appLoopManager.addTask(runnable);
     }
 
     public void runOnUiThread(Runnable runnable) {
@@ -51,7 +48,7 @@ public abstract class AppInstance implements AutoCloseable {
     public void initAppInstance() throws AmsException {
         appInstance = this;
 
-        appThreadExecutor = Executors.newSingleThreadExecutor();
+        appLoopManager.startLoopThread();
 
         backbufferImage = new BufferedImage(
                 emuCanvas.getBufferedImage().getWidth(),
@@ -63,10 +60,9 @@ public abstract class AppInstance implements AutoCloseable {
     @Override
     public void close() throws AmsException {
         try {
-            if (appThreadExecutor != null) {
-                appThreadExecutor.shutdown();
+            if (appLoopManager != null) {
                 try {
-                    appThreadExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                    appLoopManager.terminateAndWait();
                 } catch (InterruptedException e) {
                     throw new AmsException("termination interrupted", e);
                 }
@@ -127,4 +123,8 @@ public abstract class AppInstance implements AutoCloseable {
     public abstract void keyReleased(int keyCode);
 
     public abstract AmsClassLoader getClassLoader();
+
+    public AppLoopManager getAppLoopManager() {
+        return appLoopManager;
+    }
 }

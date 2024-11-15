@@ -33,14 +33,16 @@ public class AudioPresenter implements MediaPresenter {
     }
 
     public static AudioPresenter getAudioPresenter() {
-        return new AudioPresenter();
+        return getAudioTrackPresenter();
     }
 
     public static AudioPresenter getAudioPresenter(int port) {
-        return new AudioPresenter();
+        return getAudioTrackPresenter();
     }
 
-    // public static AudioTrackPresenter getAudioTrackPresenter() [iアプリオプションAPI]
+    public static AudioTrackPresenter getAudioTrackPresenter() {
+        return new AudioTrackPresenter();
+    }
 
     public int getCurrentTime() {
         return 0;
@@ -63,6 +65,16 @@ public class AudioPresenter implements MediaPresenter {
     @Override
     public void play() {
 
+    }
+
+    public void play(int time) {
+
+    }
+
+    public void pause() {
+    }
+
+    public void restart() {
     }
 
     @Override

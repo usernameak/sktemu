@@ -63,4 +63,8 @@ public class DojaAppModel extends AppModel {
     public AppInstance createAppInstance(EmuCanvas canvas) {
         return new DojaAppInstance(this, canvas);
     }
+
+    public String getAppProperty(String name) {
+        return propertyTable.getProperty(name);
+    }
 }

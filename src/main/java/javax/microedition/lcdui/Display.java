@@ -32,10 +32,10 @@ public class Display {
 
         this.current = current;
 
-        _ui_doRepaint();
+        doRepaint();
     }
 
-    public void _ui_doRepaint() {
+    private void doRepaint() {
         if (current instanceof Canvas) {
             ((Canvas) current).repaint();
         }

@@ -1,20 +1,22 @@
 package net.sktemu.ams.doja;
 
+import com.nttdocomo.opt.ui.Graphics2;
+import com.nttdocomo.ui.Graphics;
 import com.nttdocomo.ui.IApplication;
 import net.sktemu.ams.AmsClassLoader;
 import net.sktemu.ams.AmsException;
 import net.sktemu.ams.AppInstance;
-import net.sktemu.ams.skvm.SkvmAppModel;
+import net.sktemu.doja.io.ScratchpadManager;
 import net.sktemu.ui.EmuCanvas;
 
-import javax.microedition.midlet.MIDlet;
-import javax.microedition.midlet.MIDletStateChangeException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 public class DojaAppInstance extends AppInstance {
     private AmsClassLoader classLoader;
     private IApplication application;
+    private Graphics dojaGraphics;
+    private ScratchpadManager scratchpadManager;
 
     public DojaAppInstance(DojaAppModel appModel, EmuCanvas emuCanvas) {
         super(appModel, emuCanvas);
@@ -24,17 +26,22 @@ public class DojaAppInstance extends AppInstance {
     public void initAppInstance() throws AmsException {
         super.initAppInstance();
 
+        scratchpadManager = new ScratchpadManager();
+        scratchpadManager.initializeScratchpad(getDojaAppModel().getAppProperty("SPsize"));
+
         try {
             classLoader = new AmsClassLoader(appModel);
         } catch (IOException e) {
             throw new AmsException(e);
         }
 
+        dojaGraphics = new Graphics2(getBackbufferImage());
+
         runOnAppThread(() -> {
             try {
                 Class<?> appClass;
                 try {
-                    appClass = classLoader.loadClass(((DojaAppModel) appModel).getAppClassName());
+                    appClass = classLoader.loadClass(getDojaAppModel().getAppClassName());
                 } catch (ClassNotFoundException e) {
                     throw new AmsException("DoJa Application class not found", e);
                 }
@@ -94,5 +101,13 @@ public class DojaAppInstance extends AppInstance {
 
     public DojaAppModel getDojaAppModel() {
         return (DojaAppModel) appModel;
+    }
+
+    public Graphics getDojaGraphics() {
+        return dojaGraphics;
+    }
+
+    public ScratchpadManager getScratchpadManager() {
+        return scratchpadManager;
     }
 }

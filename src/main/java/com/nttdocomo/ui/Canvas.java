@@ -2,15 +2,13 @@ package com.nttdocomo.ui;
 
 import net.sktemu.ams.AppInstance;
 import net.sktemu.ams.doja.DojaAppInstance;
-import net.sktemu.ams.skvm.SkvmAppInstance;
-import net.sktemu.debug.FeatureNotImplementedError;
 
-public abstract class Canvas {
+public abstract class Canvas extends Frame {
     public static final int IME_COMMITTED = 0;
     public static final int IME_CANCELED = 1;
 
     public Graphics getGraphics() {
-        throw new FeatureNotImplementedError("feature not impl");
+        return ((DojaAppInstance)AppInstance.appInstance).getDojaGraphics();
     }
 
     public abstract void paint(Graphics g);
@@ -18,6 +16,12 @@ public abstract class Canvas {
     private void serviceRepaints() {
         DojaAppInstance app = (DojaAppInstance) AppInstance.appInstance;
 
+        if (Display.getRealCurrentFrame() != this) {
+            return;
+        }
+
+        paint(getGraphics());
+        app.blitGraphics();
     }
 
     public void repaint() {
