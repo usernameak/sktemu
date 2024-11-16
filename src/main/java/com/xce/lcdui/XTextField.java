@@ -9,6 +9,8 @@ public class XTextField {
     private int constraints;
     private boolean hasFocus;
 
+    private int x, y, width, height;
+
     public XTextField(String text, int maxSize, int constraints, Canvas canvas) {
         if (text == null) {
             text = "";
@@ -55,15 +57,23 @@ public class XTextField {
     }
 
     public void paint(Graphics g) {
+        g.setColor(0xFFFFFFFF);
+        g.fillRect(x, y, width, height);
+        g.setColor(0xFF000000);
+        g.drawRect(x, y, width, height);
 
+        g.drawString(text, x + 1, y + 1, Graphics.LEFT | Graphics.TOP);
     }
 
     public void repaint() {
-
+        // TODO:
     }
 
     public void setBounds(int x, int y, int width, int height) {
-
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
     public void setText(String text) {

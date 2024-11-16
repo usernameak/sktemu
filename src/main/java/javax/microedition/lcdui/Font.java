@@ -87,6 +87,6 @@ public class Font {
     }
 
     public int substringWidth(String str, int offset, int len) {
-        throw new FeatureNotImplementedError("Font::substringWidth");
+        return charsWidth(str.toCharArray(), offset, len);
     }
 }

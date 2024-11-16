@@ -42,6 +42,16 @@ public class RecordStore {
             throw new RecordStoreNotOpenException();
         }
 
-        throw new RecordStoreException("RecordStore.getRecord() not implemented");
+        SkvmAppInstance skvmAppInstance = (SkvmAppInstance) AppInstance.appInstance;
+        return skvmAppInstance.getRmsManager().getRecord(storeID, recordID);
+    }
+
+    public int addRecord(byte[] data, int offset, int numBytes) throws RecordStoreException {
+        if (isClosed) {
+            throw new RecordStoreNotOpenException();
+        }
+
+        SkvmAppInstance skvmAppInstance = (SkvmAppInstance) AppInstance.appInstance;
+        return skvmAppInstance.getRmsManager().addRecord(storeID, data, offset, numBytes);
     }
 }
