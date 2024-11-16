@@ -124,6 +124,7 @@ public abstract class AppInstance implements AutoCloseable {
     public abstract boolean shutdown();
 
     public abstract void keyPressed(int keyCode);
+    public abstract void keyRepeated(int keyCode);
     public abstract void keyReleased(int keyCode);
 
     public abstract AmsClassLoader getClassLoader();

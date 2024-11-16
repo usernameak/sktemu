@@ -145,6 +145,14 @@ public class SkvmAppInstance extends AppInstance {
     }
 
     @Override
+    public void keyRepeated(int keyCode) {
+        runOnAppThread(() -> {
+            Canvas canvas = (Canvas) display.getCurrent();
+            Canvas.emitKeyRepeated(canvas, keyCode);
+        });
+    }
+
+    @Override
     public void keyReleased(int keyCode) {
         runOnAppThread(() -> {
             Canvas canvas = (Canvas) display.getCurrent();

@@ -3,17 +3,19 @@ package net.sktemu.ui;
 import net.sktemu.ams.AppInstance;
 import net.sktemu.ams.AppModel;
 
-import javax.microedition.lcdui.Canvas;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashSet;
 
 public class EmuUIFrame extends JFrame {
     private final EmuCanvas canvas;
 
     private AppInstance appInstance;
+
+    private HashSet<Integer> pressedKeys = new HashSet<Integer>();
 
     public EmuUIFrame(AppModel appModel) {
         setTitle("SKTemu \u2013 " + appModel.getAppTitle());
@@ -47,7 +49,12 @@ public class EmuUIFrame extends JFrame {
                 Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
 
                 if (keyCode != null) {
-                    appInstance.keyPressed(keyCode);
+                    if (!pressedKeys.contains(keyCode)) {
+                        pressedKeys.add(keyCode);
+                        appInstance.keyPressed(keyCode);
+                    } else {
+                        appInstance.keyRepeated(keyCode);
+                    }
                 }
             }
 
@@ -56,6 +63,7 @@ public class EmuUIFrame extends JFrame {
                 Integer keyCode = KeyMappings.keyMappings.get(e.getKeyCode());
 
                 if (keyCode != null) {
+                    pressedKeys.remove(keyCode);
                     appInstance.keyReleased(keyCode);
                 }
             }

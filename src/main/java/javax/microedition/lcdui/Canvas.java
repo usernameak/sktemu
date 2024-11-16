@@ -149,6 +149,10 @@ public abstract class Canvas extends Displayable {
         canvas.keyPressed(keyCode);
     }
 
+    public static void emitKeyRepeated(Canvas canvas, int keyCode) {
+        canvas.keyRepeated(keyCode);
+    }
+
     public static void emitKeyReleased(Canvas canvas, int keyCode) {
         canvas.keyReleased(keyCode);
     }
