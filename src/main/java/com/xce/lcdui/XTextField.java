@@ -1,13 +1,21 @@
 package com.xce.lcdui;
 
+import net.sktemu.input.HangulInputMethod;
+import net.sktemu.input.IInputTarget;
+import net.sktemu.input.InputMethod;
+import net.sktemu.input.LatinInputMethod;
+
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Graphics;
 
-public class XTextField {
+public class XTextField implements IInputTarget {
+    private int cursorPos = 0;
     private String text;
     private int maxSize;
     private int constraints;
     private boolean hasFocus;
+
+    private InputMethod ime = new LatinInputMethod();
 
     private int x, y, width, height;
 
@@ -41,11 +49,22 @@ public class XTextField {
     }
 
     public void inputChar(char key) {
+        if (!hasFocus) return;
 
+        if (key == '\b') {
+            if (cursorPos == 0) return;
+
+            text = text.substring(0, cursorPos - 1) + text.substring(cursorPos);
+            cursorPos--;
+            return;
+        }
+
+        text = text.substring(0, cursorPos) + key + text.substring(cursorPos);
+        cursorPos++;
     }
 
     public void keyPressed(int keyCode) {
-
+        ime.keyPress(this, keyCode);
     }
 
     public void keyReleased(int keyCode) {
@@ -81,5 +100,20 @@ public class XTextField {
             text = "";
         }
         this.text = text;
+
+        if (cursorPos > text.length()) {
+            cursorPos = text.length();
+        }
+        ime.startNewCharacter(this);
+    }
+
+    @Override
+    public void generateInputCharacter(char ch) {
+        inputChar(ch);
+    }
+
+    @Override
+    public void discardInputCharacter() {
+        inputChar('\b');
     }
 }
