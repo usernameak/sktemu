@@ -56,6 +56,10 @@ public class XFile {
         return len;
     }
 
+    public long tell() throws IOException {
+        return raf.getFilePointer();
+    }
+
     public int seek(int n, int whence) throws IOException {
         if (whence == SEEK_SET) {
             raf.seek(n);

@@ -48,7 +48,7 @@ public class SkvmAppModel extends AppModel {
             throw new IllegalArgumentException("MIDlet-1 must be exactly 3 comma separated items long");
         }
         String midletTitle = midlet1Split[0];
-        midletClassName = midlet1Split[2];
+        midletClassName = midlet1Split[2].trim();
 
         midletTitle = propertyTable.getProperty("MIDlet-Name");
         if (midletTitle == null) {
@@ -65,6 +65,8 @@ public class SkvmAppModel extends AppModel {
     public File doCacheJar() throws AmsException {
         File jarPath = new File(getDataDir(), appID + ".jar");
         File cachedJarPath = new File(getCacheDir(), "app.jar");
+
+        System.out.println("cached jar path: " + cachedJarPath);
 
         if ("true".equals(System.getProperty("sktemu.assumePrecachedJars"))) {
             return cachedJarPath;

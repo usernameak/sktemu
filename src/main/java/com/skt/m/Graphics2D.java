@@ -6,6 +6,7 @@ import net.sktemu.debug.FeatureNotImplementedError;
 
 import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Graphics2D {
@@ -26,6 +27,7 @@ public class Graphics2D {
                 tx, ty, tx + sw, ty + sh,
                 sx, sy, sx + sw, sy + sh,
                 null);
+
     }
 
     public static Image captureLCD(int x, int y, int w, int h) {
@@ -34,12 +36,18 @@ public class Graphics2D {
         Graphics.getAWTGraphics(image.getGraphics()).drawImage(
                 bufferedImage,
                 0, 0, w, h,
-                x, y, x + w, x + h,
+                x, y, x + w, y + h,
                 null);
         return image;
     }
 
     public static Image createMaskableImage(int width, int height) {
         return Image.createImage(width, height);
+    }
+
+    public void setPixel(int x, int y, int color) {
+        java.awt.Graphics2D awtGraphics = Graphics.getAWTGraphics(Toolkit.graphics);
+        awtGraphics.setColor(new Color(color));
+        awtGraphics.drawRect(x, y, 1, 1);
     }
 }

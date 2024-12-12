@@ -3,9 +3,12 @@ package net.sktemu.ams.skvm;
 import net.sktemu.ams.AmsClassLoader;
 import net.sktemu.ams.AmsException;
 import net.sktemu.ams.AppInstance;
+import net.sktemu.ams.skvm.applet.AppletUtil;
+import net.sktemu.ams.skvm.applet.IApplet;
 import net.sktemu.rms.RmsManager;
 import net.sktemu.ui.EmuCanvas;
 import net.sktemu.xceapi.XceApiManager;
+import org.kwis.msp.lcdui.Jlet;
 
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Display;
@@ -22,7 +25,7 @@ public class SkvmAppInstance extends AppInstance {
     private Graphics midpGraphics;
     private AmsClassLoader classLoader;
 
-    private MIDlet midlet;
+    private IApplet applet;
 
     public SkvmAppInstance(SkvmAppModel appModel, EmuCanvas emuCanvas) {
         super(appModel, emuCanvas);
@@ -75,18 +78,16 @@ public class SkvmAppInstance extends AppInstance {
 
                 try {
                     Object midletObj = midletClass.getConstructor().newInstance();
-                    if (midletObj instanceof MIDlet) {
-                        midlet = (MIDlet) midletObj;
-                        System.out.println("midlet load");
+                    if (midletObj instanceof IApplet) {
+                        applet = (IApplet) midletObj;
 
-                        MIDlet.startMidlet(midlet);
+                        System.out.println("IApplet load");
+                        AppletUtil.startApplet(applet);
                     }
                 } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
                     throw new AmsException("MIDlet creation failed", e);
                 } catch (InvocationTargetException e) {
                     throw new AmsException("MIDlet creation failed", e.getCause());
-                } catch (MIDletStateChangeException e) {
-                    throw new AmsException("MIDletStateChangeException", e);
                 }
             } catch (AmsException e) {
                 // TODO: this is shit
@@ -129,8 +130,8 @@ public class SkvmAppInstance extends AppInstance {
     @Override
     public boolean shutdown() {
         try {
-            MIDlet.destroyMidlet(midlet);
-        } catch (MIDletStateChangeException e) {
+            AppletUtil.destroyApplet(applet);
+        } catch (AmsException e) {
             return false;
         }
         return true;

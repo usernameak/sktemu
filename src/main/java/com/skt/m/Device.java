@@ -7,7 +7,14 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 public class Device {
+    private static boolean backlightEnabled = true;
+
     public static void setBacklightEnabled(boolean flag) {
+        backlightEnabled = flag;
+    }
+
+    public static boolean isBacklightEnabled() {
+        return backlightEnabled;
     }
 
     public static void setKeyToneEnabled(boolean flag) {

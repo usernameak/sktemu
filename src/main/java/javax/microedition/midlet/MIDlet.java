@@ -3,9 +3,9 @@ package javax.microedition.midlet;
 import net.sktemu.ams.AppInstance;
 import net.sktemu.ams.skvm.SkvmAppInstance;
 import net.sktemu.ams.skvm.SkvmAppModel;
-import net.sktemu.debug.FeatureNotImplementedError;
+import net.sktemu.ams.skvm.applet.IApplet;
 
-public abstract class MIDlet {
+public abstract class MIDlet implements IApplet {
     private final SkvmAppInstance appInstance;
 
     protected MIDlet() {
