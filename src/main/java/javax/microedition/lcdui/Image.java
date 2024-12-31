@@ -12,15 +12,11 @@ import java.io.InputStream;
 
 public class Image {
     private final BufferedImage image;
-    private final Graphics graphics;
+    private boolean mutable;
 
     private Image(boolean mutable, BufferedImage bufferedImage) {
         this.image = bufferedImage;
-        if (mutable) {
-            this.graphics = new Graphics(bufferedImage);
-        } else {
-            this.graphics = null;
-        }
+        this.mutable = mutable;
     }
 
     public static Image createImage(int width, int height) {
@@ -29,6 +25,24 @@ public class Image {
 
     public static Image createImage(Image source) {
         return new Image(false, copyImage(source.image));
+    }
+
+    public static Image createImage(Image image, int x, int y, int width, int height, int transform) {
+        if (transform != 0) {
+            throw new UnsupportedOperationException();
+        }
+        Image result = createImage(width, height);
+        java.awt.Graphics2D g = result.image.createGraphics();
+        g.drawImage(
+                image.image,
+                0, 0,
+                width, height,
+                x, y,
+                x + width, x + height,
+                null
+        );
+        result.mutable = false;
+        return image;
     }
 
     public static Image createImage(String name) throws IOException {
@@ -76,10 +90,10 @@ public class Image {
     }
 
     public Graphics getGraphics() {
-        if (graphics == null) {
+        if (!mutable) {
             throw new IllegalStateException("Image::getGraphics() - image is immutable");
         }
-        return graphics;
+        return new Graphics(image);
     }
 
     public int getWidth() {
@@ -91,7 +105,7 @@ public class Image {
     }
 
     public boolean isMutable() {
-        return graphics != null;
+        return mutable;
     }
 
     public static BufferedImage getBufferedImage(Image image) {

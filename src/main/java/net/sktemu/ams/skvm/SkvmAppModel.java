@@ -7,6 +7,8 @@ import net.sktemu.ui.EmuCanvas;
 import net.sktemu.utils.SharedConstants;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Properties;
@@ -27,19 +29,30 @@ public class SkvmAppModel extends AppModel {
 
         for (File file : files) {
             String name = file.getName();
-            if (!name.endsWith(".msd")) continue;
+            if (!name.endsWith(".msd") && !name.endsWith(".jad")) continue;
 
             appID = name.substring(0, name.length() - 4);
 
-            loadDescriptor(file);
+            loadDescriptorData(file);
             break;
         }
     }
 
-    public void loadDescriptor(File file) throws IOException {
+    private void loadDescriptorData(File file, Charset charset) throws IOException {
+        propertyTable.clear();
+
         try (InputStream stream = new FileInputStream(file);
-             InputStreamReader reader = new InputStreamReader(stream, SharedConstants.CP949)) {
+             InputStreamReader reader = new InputStreamReader(stream, charset)) {
             propertyTable.load(reader);
+        }
+    }
+
+    public void loadDescriptorData(File file) throws IOException {
+        loadDescriptorData(file, SharedConstants.CP949);
+
+        if (propertyTable.containsKey("MIDxlet-API")) {
+            // we are in Japan now. use UTF-8 as that's what Softbank uses.
+            loadDescriptorData(file, StandardCharsets.UTF_8);
         }
 
         String midlet1 = propertyTable.getProperty("MIDlet-1");

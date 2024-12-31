@@ -40,10 +40,6 @@ public class SkvmAppInstance extends AppInstance {
         return classLoader;
     }
 
-    public Graphics getMidpGraphics() {
-        return midpGraphics;
-    }
-
     @Override
     public void initAppInstance() throws AmsException {
         super.initAppInstance();
@@ -64,7 +60,6 @@ public class SkvmAppInstance extends AppInstance {
             throw new AmsException(e);
         }
 
-        midpGraphics = new Graphics(getBackbufferImage());
         XceApiManager.initializeLCDUI(this);
 
         runOnAppThread(() -> {

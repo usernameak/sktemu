@@ -183,6 +183,19 @@ public class RmsManager implements AutoCloseable {
         return recordId;
     }
 
+    public void setRecord(int recordStoreId, int recordId, byte[] data, int off, int len) throws RecordStoreException {
+        try (PreparedStatement stmt = sqlConn.prepareStatement("UPDATE rms_records SET data = ? WHERE id = ? AND store_id = ?;")) {
+            stmt.setBinaryStream(1, new ByteArrayInputStream(data, off, len), len);
+            stmt.setInt(2, recordId);
+            stmt.setInt(3, recordStoreId);
+            stmt.executeUpdate();
+
+            sqlConn.commit();
+        } catch (SQLException e) {
+            throw new RecordStoreException("sql error occurred", e);
+        }
+    }
+
     public int deleteRecord(int recordStoreId, int recordId) throws RecordStoreException {
         // TODO:
         throw new RecordStoreException("not implemented yet");
@@ -194,6 +207,21 @@ public class RmsManager implements AutoCloseable {
             stmt.setInt(2, recordStoreId);
             stmt.setBinaryStream(3, new ByteArrayInputStream(data, off, len), len);
             stmt.executeUpdate();
+        }
+    }
+
+    public int getNumRecords(int recordStoreId) throws RecordStoreException {
+        try (PreparedStatement stmt = sqlConn.prepareStatement("SELECT COUNT(1) FROM rms_records WHERE store_id = ?;")) {
+            stmt.setInt(1, recordStoreId);
+            try (ResultSet res = stmt.executeQuery()) {
+                if (res.next()) {
+                    return res.getInt(1);
+                } else {
+                    throw new InvalidRecordIDException("Count for RecordStore " + recordStoreId + " not found (???!!!)");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RecordStoreException("sql error occurred", e);
         }
     }
 }

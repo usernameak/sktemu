@@ -6,14 +6,14 @@ public abstract class Displayable {
     public abstract boolean isShown();
 
     public void addCommand(Command cmd) {
-        throw new FeatureNotImplementedError("Displayable::addCommand");
+        // throw new FeatureNotImplementedError("Displayable::addCommand");
     }
 
     public void removeCommand(Command cmd) {
-        throw new FeatureNotImplementedError("Displayable::removeCommand");
+        // throw new FeatureNotImplementedError("Displayable::removeCommand");
     }
 
     public void setCommandListener(CommandListener listener) {
-        throw new FeatureNotImplementedError("Displayable::setCommandListener");
+        // throw new FeatureNotImplementedError("Displayable::setCommandListener");
     }
 }

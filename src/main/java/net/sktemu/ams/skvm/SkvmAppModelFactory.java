@@ -20,7 +20,7 @@ public class SkvmAppModelFactory implements AppModelFactory {
         boolean msdFound = false;
         for (File file : files) {
             String name = file.getName();
-            if (!name.endsWith(".msd")) continue;
+            if (!name.endsWith(".msd") && !name.endsWith(".jad")) continue;
 
             msdFound = true;
             break;

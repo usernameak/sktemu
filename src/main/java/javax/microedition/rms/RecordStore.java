@@ -37,6 +37,15 @@ public class RecordStore {
         isClosed = true;
     }
 
+    public int getNumRecords() throws RecordStoreException {
+        if (isClosed) {
+            throw new RecordStoreNotOpenException();
+        }
+
+        SkvmAppInstance skvmAppInstance = (SkvmAppInstance) AppInstance.appInstance;
+        return skvmAppInstance.getRmsManager().getNumRecords(storeID);
+    }
+
     public byte[] getRecord(int recordID) throws RecordStoreException {
         if (isClosed) {
             throw new RecordStoreNotOpenException();
@@ -53,5 +62,14 @@ public class RecordStore {
 
         SkvmAppInstance skvmAppInstance = (SkvmAppInstance) AppInstance.appInstance;
         return skvmAppInstance.getRmsManager().addRecord(storeID, data, offset, numBytes);
+    }
+
+    public void setRecord(int index, byte[] data, int offset, int numBytes) throws RecordStoreException {
+        if (isClosed) {
+            throw new RecordStoreNotOpenException();
+        }
+
+        SkvmAppInstance skvmAppInstance = (SkvmAppInstance) AppInstance.appInstance;
+        skvmAppInstance.getRmsManager().setRecord(storeID, index, data, offset, numBytes);
     }
 }

@@ -133,7 +133,7 @@ public abstract class Canvas extends Displayable {
             return;
         }
 
-        paint(app.getMidpGraphics());
+        paint(new Graphics(app.getBackbufferImage()));
         app.blitGraphics();
     }
 

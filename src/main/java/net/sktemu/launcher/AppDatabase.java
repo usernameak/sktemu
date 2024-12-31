@@ -84,13 +84,13 @@ public class AppDatabase {
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 String filename = entry.getName();
-                if (filename.endsWith(".msd")) {
+                if (filename.endsWith(".msd") && !filename.endsWith(".jad")) {
                     msdFilename = filename;
                 }
             }
 
             if (msdFilename == null) {
-                throw new AmsException(".msd file missing in the app archive");
+                throw new AmsException(".msd/.jad file missing in the app archive");
             }
 
             String appDirName = msdFilename.substring(0, msdFilename.length() - 4);
