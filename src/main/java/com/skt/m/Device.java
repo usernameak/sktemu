@@ -17,6 +17,10 @@ public class Device {
         return backlightEnabled;
     }
 
+    public static boolean isKeyToneEnabled() {
+        return false;
+    }
+
     public static void setKeyToneEnabled(boolean flag) {
     }
 

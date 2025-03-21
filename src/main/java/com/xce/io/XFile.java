@@ -1,10 +1,12 @@
 package com.xce.io;
 
+import net.sktemu.ams.AmsResourceManager;
 import net.sktemu.ams.AppInstance;
 import net.sktemu.debug.FeatureNotImplementedError;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 
 public class XFile {
@@ -27,48 +29,73 @@ public class XFile {
     public static final int READ_DIRECTORY = 4;
     public static final int READ_RESOURCE = 8;
 
-    private final RandomAccessFile raf;
+    private InputStream inputStream;
+    private RandomAccessFile raf;
 
     public XFile(String name, int mode) throws IOException {
-        String modeStr;
-        if (mode == READ) {
-            modeStr = "r";
-        } else if (mode == WRITE) {
-            modeStr = "rw";
-        } else if (mode == READ_WRITE) {
-            modeStr = "rw";
+        if (mode == READ_RESOURCE) {
+            inputStream = AmsResourceManager.getResourceAsStream(XFile.class, name);
         } else {
-            throw new IllegalArgumentException("invalid XFile mode " + mode);
+            String modeStr;
+            if (mode == READ) {
+                modeStr = "r";
+            } else if (mode == WRITE) {
+                modeStr = "rw";
+            } else if (mode == READ_WRITE) {
+                modeStr = "rw";
+            } else {
+                throw new IllegalArgumentException("invalid XFile mode " + mode);
+            }
+            raf = new RandomAccessFile(convertFilePath(name), modeStr);
         }
-        raf = new RandomAccessFile(convertFilePath(name), modeStr);
     }
 
     public int available() throws IOException {
-        return (int) (raf.length() - raf.getFilePointer());
+        if (raf != null) {
+            return (int) (raf.length() - raf.getFilePointer());
+        } else {
+            return inputStream.available();
+        }
     }
 
     public int read(byte[] b, int off, int len) throws IOException {
-        return raf.read(b, off, len);
+        if (raf != null) {
+            return raf.read(b, off, len);
+        } else {
+            return inputStream.read(b, off, len);
+        }
     }
 
     public int write(byte[] b, int off, int len) throws IOException {
-        raf.write(b, off, len);
-        return len;
+        if (raf != null) {
+            raf.write(b, off, len);
+            return len;
+        } else {
+            throw new IOException("InputStream XFile does not support writing");
+        }
     }
 
     public long tell() throws IOException {
-        return raf.getFilePointer();
+        if (raf != null) {
+            return raf.getFilePointer();
+        } else {
+            throw new IOException("InputStream XFile does not support seeking");
+        }
     }
 
     public int seek(int n, int whence) throws IOException {
-        if (whence == SEEK_SET) {
-            raf.seek(n);
-        } else if (whence == SEEK_CUR) {
-            raf.seek(raf.getFilePointer() + n);
-        } else if (whence == SEEK_END) {
-            raf.seek(raf.length() - n);
+        if (raf != null) {
+            if (whence == SEEK_SET) {
+                raf.seek(n);
+            } else if (whence == SEEK_CUR) {
+                raf.seek(raf.getFilePointer() + n);
+            } else if (whence == SEEK_END) {
+                raf.seek(raf.length() - n);
+            }
+            return 0;
+        } else {
+            throw new IOException("InputStream XFile does not support seeking");
         }
-        return 0;
     }
 
     public void flush() throws IOException {
@@ -76,7 +103,11 @@ public class XFile {
     }
 
     public void close() throws IOException {
-        raf.close();
+        if (raf != null) {
+            raf.close();
+        } else {
+            inputStream.close();
+        }
     }
 
     static File convertFilePath(String path) {
