@@ -1,0 +1,3 @@
+Original sequencer and synth implementation by GuyPerfect
+SMAF support by usernameak
+

@@ -1,5 +1,8 @@
 package com.skt.m;
 
+import com.keitaiwiki.music.SequencePlayer;
+import net.sktemu.media.SMAFAudioClip;
+
 import java.io.IOException;
 
 public final class AudioSystem {
@@ -8,6 +11,13 @@ public final class AudioSystem {
     }
 
     public static AudioClip getAudioClip(String format) throws UnsupportedFormatException {
+        if (format.equals("mmf")) {
+            try {
+                return new SMAFAudioClip();
+            } catch (IOException e) {
+                throw new UnsupportedFormatException();
+            }
+        }
         return new AudioClip() {
             @Override
             public void open(byte[] data, int offset, int bufferSize) throws UnsupportedFormatException, ResourceAllocException {
